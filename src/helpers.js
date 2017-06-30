@@ -20,7 +20,13 @@ const appendSVG = ({sel, height, width, margin}) => sel
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-const makeScales = ({data, y_max, height, width}) => {
+const makeScales = ({
+    raw_data,
+    data, 
+    y_max, 
+    height, 
+    width
+}) => {
   const x = d3.scaleTime()
     .domain(d3.extent(data, d => d.x))
     .range([0, width]);
@@ -29,7 +35,12 @@ const makeScales = ({data, y_max, height, width}) => {
     .domain([0, y_max])
     .range([height, 0])
 
-  return {x,y}
+  //pixels back into seconds. 
+  const toSeconds = d3.scaleLinear()
+    .domain([0, width])
+    .range(d3.extent(raw_data, d => +d.time))
+    
+  return {x,y,toSeconds}
 }
 
 const drawAxes = ({svg, scales, height}) => {
@@ -43,7 +54,14 @@ const drawAxes = ({svg, scales, height}) => {
 
   // Add the Y Axis
   svg.append("g")
-      .call(d3.axisLeft(scales.y));
+      .call(
+          d3.axisLeft(scales.y)
+            .ticks(5)
+      );
+
+  //givem a better font
+  svg.selectAll(".tick text")
+    .attr("font-family", "avenir")
 }
 
 const makeLine = ({scales}) => d3.area()
@@ -56,11 +74,47 @@ const makeArea = ({scales}) => d3.area()
     .y(d => scales.y(0))
     .y1(d => scales.y(d.y));
 
+const makeBrush = ({
+    width, 
+    height, 
+    scales,
+    onBrush = (extents) => console.log(extents)
+}) => {
+
+    //converts pixel units to seconds into day and passes the extend of our brush to our callback. 
+    function brushMove() {
+        try {
+            const s = d3.event.selection;
+            const time_range = s.map( t => scales.toSeconds(t) );
+            onBrush(time_range)
+        } catch (err) { 
+            console.log("oops, didn't select anything")
+        }
+        
+    }
+
+    return d3.brushX()
+    .extent([[0, 0], [width, height]])
+    .on("start brush end", brushMove);
+}
+
+const writeDate = ({date, margin, width, height,svg}) => svg
+    .append("g")
+    .attr("class", "current_date")
+    .attr("transform", `translate(${width + margin.right/3}, ${height/2} ) rotate(90)`)
+    .append("text")
+        .attr("text-anchor", "middle")
+        .attr("font-family", "avenir")
+        .attr("font-size", 20)
+        .text(moment(date).format("MMM  DD"));
+
 module.exports = ({
     subset_data,
     appendSVG,
     makeScales,
     drawAxes,
     makeLine,
-    makeArea
+    makeArea,
+    makeBrush,
+    writeDate
 });

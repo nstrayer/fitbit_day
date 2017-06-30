@@ -15,7 +15,7 @@
   }
 
   body{
-    font-family: monospace;
+    font-family: avenir;
     margin: 0px;
     overflow: hidden;
   }
@@ -29,13 +29,17 @@
 
   d3.csv("fitbit_data.csv", (err, data)=> {
 
+    const width =  window.innerWidth;
+
     //I loaded in a few days worth but I only want a single day.
     const desired_day = "2017-06-27"
     const day_data = data.filter(d => d.date === desired_day);
 
     let my_data = new fitbit_day({
       data: day_data,
-      dom_target: "viz"
+      dom_target: "viz",
+      date: desired_day,
+      width
     });
 
     const desired_day2 = "2017-06-29"
@@ -43,7 +47,9 @@
 
     let my_data2 = new fitbit_day({
       data: day_data2,
-      dom_target: "viz2"
+      dom_target: "viz2",
+      date: desired_day2,
+      width
     });
 
 
