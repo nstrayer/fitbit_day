@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <meta charset='utf-8'>
-<script src='youDrawIt.js'></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js"></script>
+<script src='fitbit_day.js'></script>
 
 <div>
-  <h1> Predictr </h1>
+  <h1> Fitbit Data! </h1>
 </div>
 <div id = "viz"></div>
 
@@ -25,38 +26,18 @@
 
 <script>
 
-var data = [
-  {"year": 2001, "debt": 31.4},
-  {"year": 2002, "debt": 32.6},
-  {"year": 2003, "debt": 34.5},
-  {"year": 2004, "debt": 35.5},
-  {"year": 2005, "debt": 35.6},
-  {"year": 2006, "debt": 35.3},
-  {"year": 2007, "debt": 35.2},
-  {"year": 2008, "debt": 39.3},
-  {"year": 2009, "debt": 52.3},
-  {"year": 2010, "debt": 60.9},
-  {"year": 2011, "debt": 65.9},
-  {"year": 2012, "debt": 70.4},
-  {"year": 2013, "debt": 72.6},
-  {"year": 2014, "debt": 74.4},
-  {"year": 2015, "debt": 73.6},
-]
+  d3.csv("fitbit_data.csv", (err, data)=> {
 
-const finishedDragging = (d) => console.log("user finished dragging, they have defined " + d.length + "datapoints")
+    //I loaded in a few days worth but I only want a single day.
+    const desired_day = "2017-06-28"
+    const day_data = data.filter(d => d.date === desired_day);
 
-const params = {
-  data: data,
-  dom_target: "#viz",
-  on_done_drawing: finishedDragging,
-  x_key: "year",
-  y_key: "debt",
-  y_domain: [0,80],
-  reveal_extent: 2008 //currently pins drawn line to this point but let's users line start one unit beyond. May need to be more flexible.
-}
+    let my_data = new fitbit_day({
+      data: day_data,
+      dom_target: "viz"
+    });
 
 
-
-const ourChart = new youDrawIt(params);
-
+  })
+ 
 </script>
