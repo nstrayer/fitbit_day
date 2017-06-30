@@ -36,6 +36,8 @@ class fitbit_day {
     //plot the axes
     drawAxes({svg, scales, height: viz_height});
 
+    console.log(scales.x.ticks())
+   
     const heart_line = svg
       .append('g')
       .append('path')
