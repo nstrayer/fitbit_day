@@ -31,26 +31,48 @@
 
     const width =  window.innerWidth;
 
-    //I loaded in a few days worth but I only want a single day.
-    const desired_day = "2017-06-27"
-    const day_data = data.filter(d => d.date === desired_day);
+    const days = [
+      {date: "2017-06-26", divid: "zero"}, 
+      {date: "2017-06-27", divid: "one"}, 
+      {date: "2017-06-28", divid: "two"}, 
+      {date: "2017-06-29", divid: "three"},
+      {date: "2017-06-30", divid: "three"}
 
-    let my_data = new fitbit_day({
-      data: day_data,
-      dom_target: "viz",
-      date: desired_day,
-      width
-    });
+    ];
 
-    const desired_day2 = "2017-06-29"
-    const day_data2 = data.filter(d => d.date === desired_day2);
+    days.forEach(
+      day => {
+        const day_data = data.filter(d => d.date === day.date);
+        d3.select('body').append("div").attr("id", day.divid);
+        const day_plot = new fitbit_day({
+          data: day_data,
+          dom_target: day.divid,
+          date: day.date,
+          width
+        })
+      }
+    );
 
-    let my_data2 = new fitbit_day({
-      data: day_data2,
-      dom_target: "viz2",
-      date: desired_day2,
-      width
-    });
+    // //I loaded in a few days worth but I only want a single day.
+    // const desired_day = "2017-06-27"
+    
+
+    // let my_data = new fitbit_day({
+    //   data: day_data,
+    //   dom_target: "viz",
+    //   date: desired_day,
+    //   width
+    // });
+
+    // const desired_day2 = "2017-06-29"
+    // const day_data2 = data.filter(d => d.date === desired_day2);
+
+    // let my_data2 = new fitbit_day({
+    //   data: day_data2,
+    //   dom_target: "viz2",
+    //   date: desired_day2,
+    //   width
+    // });
 
 
   })

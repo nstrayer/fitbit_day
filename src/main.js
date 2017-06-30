@@ -22,7 +22,8 @@ class fitbit_day {
       line_thickness = 1,
       hr_color = "#8da0cb",
       steps_color = "#66c2a5",
-      margin = {left: 50, right: 80, top: 60, bottom: 30}
+      font = "avenir",
+      margin = {left: 40, right: 80, top: 60, bottom: 30}
     }
   ){
 
@@ -44,9 +45,10 @@ class fitbit_day {
           tag_brush  = makeBrush({height: viz_height, width: viz_width, scales});
 
     //plot the axes
-    drawAxes({svg, scales, height: viz_height});
-    writeDate({date, margin, width:viz_width, height:viz_height,svg});
+    drawAxes({svg, scales, height: viz_height, font});
+    writeDate({date, margin, width:viz_width, height:viz_height,svg,font});
 
+    console.log(scales.x.domain())
     const heart_line = svg
       .append('g')
       .append('path')
@@ -66,22 +68,6 @@ class fitbit_day {
       .append("g")
       .attr("class", "brush")
       .call(tag_brush);
-
-    // var handle = gBrush.selectAll(".handle--custom")
-    //   .data([{type: "w"}, {type: "e"}])
-    //   .enter().append("path")
-    //     .attr("class", "handle--custom")
-    //     .attr("fill", "#666")
-    //     .attr("fill-opacity", 0.8)
-    //     .attr("stroke", "#000")
-    //     .attr("stroke-width", 1.5)
-    //     .attr("cursor", "ew-resize")
-    //     .attr("d", d3.arc()
-    //         .innerRadius(0)
-    //         .outerRadius(height / 2)
-    //         .startAngle(0)
-    //         .endAngle(function(d, i) { return i ? Math.PI : -Math.PI; }));
-
 
   }
 

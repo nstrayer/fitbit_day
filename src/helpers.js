@@ -28,7 +28,7 @@ const makeScales = ({
     width
 }) => {
   const x = d3.scaleTime()
-    .domain(d3.extent(data, d => d.x))
+    .domain([secondsToTime(0), secondsToTime(86400)])
     .range([0, width]);
 
   const y = d3.scaleLinear()
@@ -43,7 +43,7 @@ const makeScales = ({
   return {x,y,toSeconds}
 }
 
-const drawAxes = ({svg, scales, height}) => {
+const drawAxes = ({svg, scales, height, font}) => {
   // Add the X Axis
   svg.append("g")
       .attr("transform", "translate(0," + height + ")")
@@ -61,7 +61,7 @@ const drawAxes = ({svg, scales, height}) => {
 
   //givem a better font
   svg.selectAll(".tick text")
-    .attr("font-family", "avenir")
+    .attr("font-family", font)
 }
 
 const makeLine = ({scales}) => d3.area()
@@ -98,13 +98,13 @@ const makeBrush = ({
     .on("start brush end", brushMove);
 }
 
-const writeDate = ({date, margin, width, height,svg}) => svg
+const writeDate = ({date, margin, width, height,svg, font}) => svg
     .append("g")
     .attr("class", "current_date")
     .attr("transform", `translate(${width + margin.right/3}, ${height/2} ) rotate(90)`)
     .append("text")
         .attr("text-anchor", "middle")
-        .attr("font-family", "avenir")
+        .attr("font-family", font)
         .attr("font-size", 20)
         .text(moment(date).format("MMM  DD"));
 
