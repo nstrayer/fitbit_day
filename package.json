@@ -1,12 +1,12 @@
 {
-  "name": "drawplot",
-  "version": "1.0.0",
+  "name": "fitbit_day",
+  "version": "0.0.1",
   "description": "",
   "main": "src/main.js",
   "scripts": {
-    "start": "watchify src/main.js src/main.js -t [ babelify --presets [ es2015 ] ] --standalone youDrawIt -o demo/youDrawIt.js -v",
-    "build": "browserify src/main.js -t [ babelify --presets [ es2015 ] ] --standalone youDrawIt > dist/youDrawIt.js",
-    "buildMin": "browserify src/main.js -t [ babelify --presets [ es2015 ] ] --standalone youDrawIt | uglifyjs -cm > dist/youDrawIt.min.js"
+    "start": "watchify src/main.js src/main.js -t [ babelify --presets [ es2015 ] ] --standalone fitbit_day -o demo/fitbit_day.js -v",
+    "build": "browserify src/main.js -t [ babelify --presets [ es2015 ] ] --standalone fitbit_day > dist/fitbit_day.js",
+    "buildMin": "browserify src/main.js -t [ babelify --presets [ es2015 ] ] --standalone fitbit_day | uglifyjs -cm > dist/fitbit_day.min.js"
   },
   "author": "Nick Strayer <nick.strayer@gmail.com> (http://nickstrayer.me)",
   "license": "MIT",
