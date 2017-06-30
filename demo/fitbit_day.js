@@ -16871,35 +16871,50 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var d3 = require('d3');
 
-var appendSVG = function appendSVG(_ref) {
-  var sel = _ref.sel,
-      height = _ref.height,
-      width = _ref.width,
-      margin = _ref.margin;
+var subset_data = function subset_data(_ref) {
+  var data = _ref.data,
+      type = _ref.type,
+      _ref$x_val = _ref.x_val,
+      x_val = _ref$x_val === undefined ? "time" : _ref$x_val,
+      _ref$y_val = _ref.y_val,
+      y_val = _ref$y_val === undefined ? "value" : _ref$y_val;
+  return data.filter(function (d) {
+    return d.type == type;
+  }).map(function (d) {
+    return {
+      x: +d[x_val],
+      y: +d[y_val]
+    };
+  });
+};
+
+var appendSVG = function appendSVG(_ref2) {
+  var sel = _ref2.sel,
+      height = _ref2.height,
+      width = _ref2.width,
+      margin = _ref2.margin;
   return sel.append("svg").attr("width", width).attr("height", height).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 };
 
-var makeScales = function makeScales(_ref2) {
-  var data = _ref2.data,
-      y_max = _ref2.y_max,
-      height = _ref2.height,
-      width = _ref2.width;
+var makeScales = function makeScales(_ref3) {
+  var data = _ref3.data,
+      y_max = _ref3.y_max,
+      height = _ref3.height,
+      width = _ref3.width;
 
   var x = d3.scaleLinear().domain(d3.extent(data, function (d) {
     return d.x;
   })).range([0, width]);
 
-  var y = d3.scaleLinear().domain([d3.min(data, function (d) {
-    return d.y;
-  }), y_max]).range([height, 0]);
+  var y = d3.scaleLinear().domain([0, y_max]).range([height, 0]);
 
   return { x: x, y: y };
 };
 
-var drawAxes = function drawAxes(_ref3) {
-  var svg = _ref3.svg,
-      scales = _ref3.scales,
-      height = _ref3.height;
+var drawAxes = function drawAxes(_ref4) {
+  var svg = _ref4.svg,
+      scales = _ref4.scales,
+      height = _ref4.height;
 
   // Add the X Axis
   svg.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(scales.x));
@@ -16908,10 +16923,33 @@ var drawAxes = function drawAxes(_ref3) {
   svg.append("g").call(d3.axisLeft(scales.y));
 };
 
+var makeLine = function makeLine(_ref5) {
+  var scales = _ref5.scales;
+  return d3.area().x(function (d) {
+    return scales.x(d.x);
+  }).y(function (d) {
+    return scales.y(d.y);
+  });
+};
+
+var makeArea = function makeArea(_ref6) {
+  var scales = _ref6.scales;
+  return d3.area().curve(d3.curveStepAfter).x(function (d) {
+    return scales.x(d.x);
+  }).y(function (d) {
+    return scales.y(0);
+  }).y1(function (d) {
+    return scales.y(d.y);
+  });
+};
+
 module.exports = {
+  subset_data: subset_data,
   appendSVG: appendSVG,
   makeScales: makeScales,
-  drawAxes: drawAxes
+  drawAxes: drawAxes,
+  makeLine: makeLine,
+  makeArea: makeArea
 };
 
 },{"d3":1}],3:[function(require,module,exports){
@@ -16926,17 +16964,26 @@ function _classCallCheck(instance, Constructor) {
 var d3 = require('d3');
 
 var _require = require('./helpers'),
+    subset_data = _require.subset_data,
     appendSVG = _require.appendSVG,
     makeScales = _require.makeScales,
-    drawAxes = _require.drawAxes;
+    drawAxes = _require.drawAxes,
+    makeLine = _require.makeLine,
+    makeArea = _require.makeArea;
 
 var fitbit_day = function fitbit_day(_ref) {
     var _ref$height = _ref.height,
         height = _ref$height === undefined ? 200 : _ref$height,
         _ref$width = _ref.width,
-        width = _ref$width === undefined ? 500 : _ref$width,
+        width = _ref$width === undefined ? 1000 : _ref$width,
         _ref$y_max = _ref.y_max,
         y_max = _ref$y_max === undefined ? 200 : _ref$y_max,
+        _ref$line_thickness = _ref.line_thickness,
+        line_thickness = _ref$line_thickness === undefined ? 1 : _ref$line_thickness,
+        _ref$hr_color = _ref.hr_color,
+        hr_color = _ref$hr_color === undefined ? "#8da0cb" : _ref$hr_color,
+        _ref$steps_color = _ref.steps_color,
+        steps_color = _ref$steps_color === undefined ? "#66c2a5" : _ref$steps_color,
         data = _ref.data,
         _ref$dom_target = _ref.dom_target,
         dom_target = _ref$dom_target === undefined ? "viz" : _ref$dom_target,
@@ -16945,16 +16992,22 @@ var fitbit_day = function fitbit_day(_ref) {
 
     _classCallCheck(this, fitbit_day);
 
-    var sel = d3.select("#" + dom_target).html(''),
+    var hr_data = subset_data({ data: data, type: "heart rate" }),
+        steps_data = subset_data({ data: data, type: "steps" }),
+        sel = d3.select("#" + dom_target).html(''),
         viz_width = width - margin.left - margin.right,
         viz_height = height - margin.top - margin.bottom,
         svg = appendSVG({ sel: sel, height: height, width: width, margin: margin }),
-        scales = makeScales({ data: data, y_max: y_max, height: viz_height, width: viz_width });
+        scales = makeScales({ data: hr_data, y_max: y_max, height: viz_height, width: viz_width }),
+        line = makeLine({ scales: scales }),
+        area = makeArea({ scales: scales });
 
     //plot the axes
     drawAxes({ svg: svg, scales: scales, height: viz_height });
 
-    console.log(viz_height);
+    var heart_line = svg.append('g').append('path').attr("d", line(hr_data)).style("stroke", hr_color).style("stroke-width", line_thickness).style("fill", "none");
+
+    var steps_line = svg.append('g').append('path').attr("d", area(steps_data)).style("fill", steps_color).style("fill-opacity", 0.5);
 };
 
 module.exports = fitbit_day;

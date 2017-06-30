@@ -7,6 +7,7 @@
   <h1> Fitbit Data! </h1>
 </div>
 <div id = "viz"></div>
+<div id = "viz2"></div>
 
 <style>
   svg{
@@ -29,12 +30,20 @@
   d3.csv("fitbit_data.csv", (err, data)=> {
 
     //I loaded in a few days worth but I only want a single day.
-    const desired_day = "2017-06-28"
+    const desired_day = "2017-06-27"
     const day_data = data.filter(d => d.date === desired_day);
 
     let my_data = new fitbit_day({
       data: day_data,
       dom_target: "viz"
+    });
+
+    const desired_day2 = "2017-06-29"
+    const day_data2 = data.filter(d => d.date === desired_day2);
+
+    let my_data2 = new fitbit_day({
+      data: day_data2,
+      dom_target: "viz2"
     });
 
 
