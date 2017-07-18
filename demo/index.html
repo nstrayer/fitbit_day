@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <meta charset='utf-8'>
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js"></script>
@@ -47,26 +51,30 @@
 
 <script>
 
-  d3.csv("fitbit_data.csv", (err, data)=> {
+  d3.csv("fitbit_data.csv", (err, data) => {
 
-    const width =  window.innerWidth;
+    const width = window.innerWidth;
 
     const days = [
-      {date: "2017-06-26", divid: "zero"}, 
-      {date: "2017-06-27", divid: "one"}, 
-      {date: "2017-06-28", divid: "two"}, 
-      {date: "2017-06-29", divid: "three"},
-      {date: "2017-06-30", divid: "three"}
-
+      { date: "2017-06-26", divid: "zero" },
+      { date: "2017-06-27", divid: "one" },
+      { date: "2017-06-28", divid: "two" },
+      { date: "2017-06-29", divid: "three" },
+      { date: "2017-06-30", divid: "three" }
     ];
 
     days.forEach(
-      day => {
-        const day_data = data.filter(d => d.date === day.date);
-        d3.select('body').append("div").attr("id", day.divid);
+      (day) => {
+        const dayData = data.filter(d => d.date === day.date);
+
+        d3.select('body')
+          .append("div")
+          .attr("id", day.divid)
+          .style("position", "relative");
+
         const day_plot = new fitbit_day({
-          data: day_data,
-          dom_target: day.divid,
+          data: dayData,
+          domTarget: day.divid,
           date: day.date,
           width
         })
@@ -74,5 +82,5 @@
     );
 
   })
- 
+
 </script>

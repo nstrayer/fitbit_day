@@ -21334,6 +21334,226 @@ return hooks;
 },{}],3:[function(require,module,exports){
 'use strict';
 
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+var d3 = require('d3');
+
+var _require = require('./helpers'),
+    subsetData = _require.subsetData,
+    appendSVG = _require.appendSVG,
+    makeScales = _require.makeScales,
+    drawAxes = _require.drawAxes,
+    makeLine = _require.makeLine,
+    makeArea = _require.makeArea,
+    writeDate = _require.writeDate;
+
+var _require2 = require('./brushHelpers'),
+    makeBrush = _require2.makeBrush,
+    makeTagInput = _require2.makeTagInput;
+
+var SingleDay = function SingleDay(_ref) {
+  var data = _ref.data,
+      date = _ref.date,
+      _ref$domTarget = _ref.domTarget,
+      domTarget = _ref$domTarget === undefined ? 'viz' : _ref$domTarget,
+      _ref$height = _ref.height,
+      height = _ref$height === undefined ? 200 : _ref$height,
+      _ref$width = _ref.width,
+      width = _ref$width === undefined ? 1000 : _ref$width,
+      _ref$yMax = _ref.yMax,
+      yMax = _ref$yMax === undefined ? 200 : _ref$yMax,
+      _ref$lineThickness = _ref.lineThickness,
+      lineThickness = _ref$lineThickness === undefined ? 1 : _ref$lineThickness,
+      _ref$hrColor = _ref.hrColor,
+      hrColor = _ref$hrColor === undefined ? '#8da0cb' : _ref$hrColor,
+      _ref$stepsColor = _ref.stepsColor,
+      stepsColor = _ref$stepsColor === undefined ? '#66c2a5' : _ref$stepsColor,
+      _ref$font = _ref.font,
+      font = _ref$font === undefined ? 'avenir' : _ref$font,
+      _ref$margin = _ref.margin,
+      margin = _ref$margin === undefined ? { left: 40, right: 80, top: 60, bottom: 30 } : _ref$margin;
+
+  _classCallCheck(this, SingleDay);
+
+  var hrData = subsetData({ data: data, type: 'heart rate' });
+  var stepsData = subsetData({ data: data, type: 'steps' });
+  var sel = d3.select('#' + domTarget).html('');
+  var vizWidth = width - margin.left - margin.right;
+  var vizHeight = height - margin.top - margin.bottom;
+  var svg = appendSVG({ sel: sel, height: height, width: width, margin: margin });
+  var scales = makeScales({
+    raw_data: data,
+    data: hrData,
+    yMax: yMax,
+    height: vizHeight,
+    width: vizWidth
+  });
+  var line = makeLine({ scales: scales });
+  var area = makeArea({ scales: scales });
+  var tagInput = makeTagInput({ sel: sel });
+  var tagBrush = makeBrush({
+    height: vizHeight,
+    width: vizWidth,
+    tagInput: tagInput,
+    onBrush: function onBrush(ext) {
+      return console.log('weeeee!');
+    },
+    scales: scales
+  });
+
+  // plot the axes
+  drawAxes({ svg: svg, scales: scales, height: vizHeight, font: font });
+  writeDate({ date: date, margin: margin, width: vizWidth, height: vizHeight, svg: svg, font: font });
+
+  // heart rate line
+  svg.append('g').append('path').attr('d', line(hrData)).style('stroke', hrColor).style('stroke-width', lineThickness).style('fill', 'none');
+
+  // steps line
+  svg.append('g').append('path').attr('d', area(stepsData)).style('fill', stepsColor).style('fill-opacity', 0.5);
+
+  // tagging brush
+  svg.append('g').attr('class', 'brush').call(tagBrush);
+}
+
+// method for drawing/redrawing (e.g. on resize)
+;
+
+module.exports = SingleDay;
+
+},{"./brushHelpers":4,"./helpers":5,"d3":1}],4:[function(require,module,exports){
+'use strict';
+
+var _slicedToArray = function () {
+    function sliceIterator(arr, i) {
+        var _arr = [];var _n = true;var _d = false;var _e = undefined;try {
+            for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+                _arr.push(_s.value);if (i && _arr.length === i) break;
+            }
+        } catch (err) {
+            _d = true;_e = err;
+        } finally {
+            try {
+                if (!_n && _i["return"]) _i["return"]();
+            } finally {
+                if (_d) throw _e;
+            }
+        }return _arr;
+    }return function (arr, i) {
+        if (Array.isArray(arr)) {
+            return arr;
+        } else if (Symbol.iterator in Object(arr)) {
+            return sliceIterator(arr, i);
+        } else {
+            throw new TypeError("Invalid attempt to destructure non-iterable instance");
+        }
+    };
+}();
+
+var d3 = require('d3');
+
+var getTimeOfDay = function getTimeOfDay(secs) {
+    var hour = Math.floor(secs / 3600);
+    var amPm = hour < 12 ? 'AM' : 'PM';
+    var hour12 = hour <= 12 ? hour : hour - 12;
+    var mins = Math.floor((secs - hour * 3600) / 60);
+    var minPad = ('0' + mins).substr(mins.toString().length - 1);
+    return hour12 + ':' + minPad + amPm;
+};
+
+// makes an invisible div to be used as the text input for tagging activities. 
+var makeTagInput = function makeTagInput(_ref) {
+    var sel = _ref.sel;
+
+    var tagBody = sel.append('div').attr('class', 'tooltip').style('position', 'absolute').style('text-align', 'left').style('padding', '8px').style('font', '14px optima').style('background', 'lightsteelblue').style('border', 0).style('border-radius', '8px').style('top', '28px');
+
+    var tagText = tagBody.append('span');
+
+    // line break to give space
+    tagBody.append('br');
+
+    var tagInput = tagBody.append('input').attr('type', 'text').attr('name', 'activity_tag').style('margin-top', '4px');
+
+    // submit button
+    tagBody.append('input').attr('type', 'submit').attr('value', 'tag').style('margin-left', '3px');
+
+    var changeTime = function changeTime(_ref2) {
+        var _ref3 = _slicedToArray(_ref2, 2),
+            start = _ref3[0],
+            end = _ref3[1];
+
+        tagText.text('Between ' + getTimeOfDay(start) + ' and ' + getTimeOfDay(end) + ' I:');
+    };
+
+    var hide = function hide() {
+        tagBody.transition().duration(200).style('opacity', 0);
+    };
+
+    var move = function move(position) {
+        var transition = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+        console.log('im being moved now');
+        tagBody.transition().duration(transition ? 200 : 0).style('opacity', .9).style('left', position + 40 + 'px');
+    };
+    return {
+        move: move,
+        changeTime: changeTime,
+        hide: hide,
+        main: tagBody,
+        message: tagText,
+        input: tagInput
+    };
+};
+
+var makeBrush = function makeBrush(_ref4) {
+    var width = _ref4.width,
+        height = _ref4.height,
+        _ref4$padding = _ref4.padding,
+        padding = _ref4$padding === undefined ? 15 : _ref4$padding,
+        scales = _ref4.scales,
+        tagInput = _ref4.tagInput,
+        _ref4$onBrush = _ref4.onBrush,
+        onBrush = _ref4$onBrush === undefined ? function (extents) {
+        return console.log(extents);
+    } : _ref4$onBrush;
+
+    // converts pixel units to seconds into day and passes the extend of our brush to our callback. 
+    function brushMove() {
+        try {
+            var s = d3.event.selection;
+            console.log('selection', s);
+
+            var timeRange = s.map(function (t) {
+                return scales.toSeconds(t);
+            });
+            onBrush(timeRange);
+
+            tagInput.changeTime(timeRange);
+            tagInput.move(d3.event.selection[0], false);
+        } catch (err) {
+            console.log('oops, didn\'t select anything');
+        }
+    };
+
+    return d3.brushX().extent([[0, 0], [width, height]]).on('start', function () {
+        console.log('started brushing');
+        tagInput.move(d3.event.selection[0]);
+    }).on('brush', brushMove).on('end', function () {
+        tagInput.move(d3.event.selection[0]);
+    });
+};
+
+module.exports = {
+    makeBrush: makeBrush,
+    makeTagInput: makeTagInput
+};
+
+},{"d3":1}],5:[function(require,module,exports){
+'use strict';
+
 var d3 = require('d3');
 var moment = require('moment');
 
@@ -21341,19 +21561,21 @@ var secondsToTime = function secondsToTime(secs) {
     return moment().startOf('day').seconds(secs);
 };
 
-var subset_data = function subset_data(_ref) {
+var timeFormat = d3.timeFormat('%I %p');
+
+var subsetData = function subsetData(_ref) {
     var data = _ref.data,
         type = _ref.type,
-        _ref$x_val = _ref.x_val,
-        x_val = _ref$x_val === undefined ? "time" : _ref$x_val,
-        _ref$y_val = _ref.y_val,
-        y_val = _ref$y_val === undefined ? "value" : _ref$y_val;
+        _ref$xVal = _ref.xVal,
+        xVal = _ref$xVal === undefined ? 'time' : _ref$xVal,
+        _ref$yVal = _ref.yVal,
+        yVal = _ref$yVal === undefined ? 'value' : _ref$yVal;
     return data.filter(function (d) {
         return d.type == type;
     }).map(function (d) {
         return {
-            x: secondsToTime(+d[x_val]),
-            y: +d[y_val]
+            x: secondsToTime(+d[xVal]),
+            y: +d[yVal]
         };
     });
 };
@@ -21363,21 +21585,21 @@ var appendSVG = function appendSVG(_ref2) {
         height = _ref2.height,
         width = _ref2.width,
         margin = _ref2.margin;
-    return sel.append("svg").attr("width", width).attr("height", height).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    return sel.append('svg').attr('width', width).attr('height', height).style('user-select', 'none').style('cursor', 'default').append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 };
 
 var makeScales = function makeScales(_ref3) {
     var raw_data = _ref3.raw_data,
         data = _ref3.data,
-        y_max = _ref3.y_max,
+        yMax = _ref3.yMax,
         height = _ref3.height,
         width = _ref3.width;
 
     var x = d3.scaleTime().domain([secondsToTime(0), secondsToTime(86400)]).range([0, width]);
 
-    var y = d3.scaleLinear().domain([0, y_max]).range([height, 0]);
+    var y = d3.scaleLinear().domain([0, yMax]).range([height, 0]);
 
-    //pixels back into seconds. 
+    // pixels back into seconds. 
     var toSeconds = d3.scaleLinear().domain([0, width]).range(d3.extent(raw_data, function (d) {
         return +d.time;
     }));
@@ -21392,13 +21614,13 @@ var drawAxes = function drawAxes(_ref4) {
         font = _ref4.font;
 
     // Add the X Axis
-    svg.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(scales.x).tickFormat(d3.timeFormat("%I %p")));
+    svg.append('g').attr('transform', 'translate(0,' + height + ')').call(d3.axisBottom(scales.x).tickFormat(timeFormat));
 
     // Add the Y Axis
-    svg.append("g").call(d3.axisLeft(scales.y).ticks(5));
+    svg.append('g').call(d3.axisLeft(scales.y).ticks(5));
 
-    //givem a better font
-    svg.selectAll(".tick text").attr("font-family", font);
+    // givem a better font
+    svg.selectAll('.tick text').attr('font-family', font);
 };
 
 var makeLine = function makeLine(_ref5) {
@@ -21421,127 +21643,32 @@ var makeArea = function makeArea(_ref6) {
     });
 };
 
-var makeBrush = function makeBrush(_ref7) {
-    var width = _ref7.width,
+var writeDate = function writeDate(_ref7) {
+    var date = _ref7.date,
+        margin = _ref7.margin,
+        width = _ref7.width,
         height = _ref7.height,
-        scales = _ref7.scales,
-        _ref7$onBrush = _ref7.onBrush,
-        onBrush = _ref7$onBrush === undefined ? function (extents) {
-        return console.log(extents);
-    } : _ref7$onBrush;
-
-    //converts pixel units to seconds into day and passes the extend of our brush to our callback. 
-    function brushMove() {
-        try {
-            var s = d3.event.selection;
-            var time_range = s.map(function (t) {
-                return scales.toSeconds(t);
-            });
-            onBrush(time_range);
-        } catch (err) {
-            console.log("oops, didn't select anything");
-        }
-    }
-
-    return d3.brushX().extent([[0, 0], [width, height]]).on("start brush end", brushMove);
-};
-
-var writeDate = function writeDate(_ref8) {
-    var date = _ref8.date,
-        margin = _ref8.margin,
-        width = _ref8.width,
-        height = _ref8.height,
-        svg = _ref8.svg,
-        font = _ref8.font;
-    return svg.append("g").attr("class", "current_date").attr("transform", 'translate(' + (width + margin.right / 3) + ', ' + height / 2 + ' ) rotate(90)').append("text").attr("text-anchor", "middle").attr("font-family", font).attr("font-size", 20).text(moment(date).format("MMM  DD"));
+        svg = _ref7.svg,
+        font = _ref7.font;
+    return svg.append('g').attr('class', 'current_date').attr('transform', 'translate(' + (width + margin.right / 3) + ', ' + height / 2 + ' ) rotate(90)').append('text').attr('text-anchor', 'middle').attr('font-family', font).attr('font-size', 20).text(moment(date).format('MMM  DD'));
 };
 
 module.exports = {
-    subset_data: subset_data,
+    subsetData: subsetData,
     appendSVG: appendSVG,
     makeScales: makeScales,
     drawAxes: drawAxes,
     makeLine: makeLine,
     makeArea: makeArea,
-    makeBrush: makeBrush,
     writeDate: writeDate
 };
 
-},{"d3":1,"moment":2}],4:[function(require,module,exports){
+},{"d3":1,"moment":2}],6:[function(require,module,exports){
 'use strict';
 
-function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-        throw new TypeError("Cannot call a class as a function");
-    }
-}
+var FitbitDay = require('./SingleDay');
 
-var d3 = require('d3');
+module.exports = FitbitDay;
 
-var _require = require('./helpers'),
-    subset_data = _require.subset_data,
-    appendSVG = _require.appendSVG,
-    makeScales = _require.makeScales,
-    drawAxes = _require.drawAxes,
-    makeLine = _require.makeLine,
-    makeArea = _require.makeArea,
-    makeBrush = _require.makeBrush,
-    writeDate = _require.writeDate;
-
-var fitbit_day = function fitbit_day(_ref) {
-    var data = _ref.data,
-        date = _ref.date,
-        _ref$dom_target = _ref.dom_target,
-        dom_target = _ref$dom_target === undefined ? "viz" : _ref$dom_target,
-        _ref$height = _ref.height,
-        height = _ref$height === undefined ? 200 : _ref$height,
-        _ref$width = _ref.width,
-        width = _ref$width === undefined ? 1000 : _ref$width,
-        _ref$y_max = _ref.y_max,
-        y_max = _ref$y_max === undefined ? 200 : _ref$y_max,
-        _ref$line_thickness = _ref.line_thickness,
-        line_thickness = _ref$line_thickness === undefined ? 1 : _ref$line_thickness,
-        _ref$hr_color = _ref.hr_color,
-        hr_color = _ref$hr_color === undefined ? "#8da0cb" : _ref$hr_color,
-        _ref$steps_color = _ref.steps_color,
-        steps_color = _ref$steps_color === undefined ? "#66c2a5" : _ref$steps_color,
-        _ref$font = _ref.font,
-        font = _ref$font === undefined ? "avenir" : _ref$font,
-        _ref$margin = _ref.margin,
-        margin = _ref$margin === undefined ? { left: 40, right: 80, top: 60, bottom: 30 } : _ref$margin;
-
-    _classCallCheck(this, fitbit_day);
-
-    var hr_data = subset_data({ data: data, type: "heart rate" }),
-        steps_data = subset_data({ data: data, type: "steps" }),
-        sel = d3.select("#" + dom_target).html(''),
-        viz_width = width - margin.left - margin.right,
-        viz_height = height - margin.top - margin.bottom,
-        svg = appendSVG({ sel: sel, height: height, width: width, margin: margin }),
-        scales = makeScales({
-        raw_data: data,
-        data: hr_data,
-        y_max: y_max,
-        height: viz_height,
-        width: viz_width
-    }),
-        line = makeLine({ scales: scales }),
-        area = makeArea({ scales: scales }),
-        tag_brush = makeBrush({ height: viz_height, width: viz_width, scales: scales });
-
-    //plot the axes
-    drawAxes({ svg: svg, scales: scales, height: viz_height, font: font });
-    writeDate({ date: date, margin: margin, width: viz_width, height: viz_height, svg: svg, font: font });
-
-    console.log(scales.x.domain());
-    var heart_line = svg.append('g').append('path').attr("d", line(hr_data)).style("stroke", hr_color).style("stroke-width", line_thickness).style("fill", "none");
-
-    var steps_line = svg.append('g').append('path').attr("d", area(steps_data)).style("fill", steps_color).style("fill-opacity", 0.5);
-
-    var tagger = svg.append("g").attr("class", "brush").call(tag_brush);
-};
-
-module.exports = fitbit_day;
-
-},{"./helpers":3,"d3":1}]},{},[4])(4)
+},{"./SingleDay":3}]},{},[6])(6)
 });
