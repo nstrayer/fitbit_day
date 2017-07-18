@@ -12,6 +12,7 @@
   "author": "Nick Strayer <nick.strayer@gmail.com> (http://nickstrayer.me)",
   "license": "MIT",
   "dependencies": {
+    "colorbrewer": "1.0.0",
     "d3": "^4.9.1",
     "moment": "2.18.1"
   },

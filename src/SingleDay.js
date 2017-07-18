@@ -10,7 +10,8 @@ const {
   writeDate,
 } = require('./helpers');
 
-const {makeBrush, TagInput} = require('./brushHelpers');
+const {TagInput} = require('./brushHelpers');
+const TagViz = require('./tagViz');
 
 /** Takes time series data from a single day and plots a nice little day long series of heartrate and steps together */
 class SingleDay {
@@ -43,6 +44,14 @@ class SingleDay {
     });
     const line = makeLine({scales});
     const area = makeArea({scales});
+    const tags = [];
+
+    const tagViz = new TagViz({
+      svg,
+      scales,
+      height: vizHeight,
+      width: vizWidth,
+    });
 
     const tagInput = new TagInput({
       svg,
@@ -50,8 +59,11 @@ class SingleDay {
       height: vizHeight,
       width: vizWidth,
       scales,
+      onTag: (tag) => {
+        tags.push(tag);
+        tagViz.draw(tags);
+      },
     });
-
 
     // plot the axes
     drawAxes({svg, scales, height: vizHeight, font});

@@ -85,4 +85,5 @@ module.exports = {
   makeLine,
   makeArea,
   writeDate,
+  secondsToTime,
 };
