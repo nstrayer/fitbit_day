@@ -2,5 +2,9 @@
     "extends": "google",
     "parserOptions": {
         "ecmaVersion": 6
+    },
+    "rules":{
+        "max-len": "warn",
+        "max-len/ignoreComment": "off"
     }
 }

@@ -21355,7 +21355,11 @@ var _require2 = require('./brushHelpers'),
     makeBrush = _require2.makeBrush,
     makeTagInput = _require2.makeTagInput;
 
-var SingleDay = function SingleDay(_ref) {
+/** Takes time series data from a single day and plots a nice little day long series of heartrate and steps together */
+
+var SingleDay =
+/** Takes a bunch of self explanatory variables, but mostly the data as a json file and the date */
+function SingleDay(_ref) {
   var data = _ref.data,
       date = _ref.date,
       _ref$domTarget = _ref.domTarget,
@@ -21428,127 +21432,135 @@ module.exports = SingleDay;
 'use strict';
 
 var _slicedToArray = function () {
-    function sliceIterator(arr, i) {
-        var _arr = [];var _n = true;var _d = false;var _e = undefined;try {
-            for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-                _arr.push(_s.value);if (i && _arr.length === i) break;
-            }
-        } catch (err) {
-            _d = true;_e = err;
-        } finally {
-            try {
-                if (!_n && _i["return"]) _i["return"]();
-            } finally {
-                if (_d) throw _e;
-            }
-        }return _arr;
-    }return function (arr, i) {
-        if (Array.isArray(arr)) {
-            return arr;
-        } else if (Symbol.iterator in Object(arr)) {
-            return sliceIterator(arr, i);
-        } else {
-            throw new TypeError("Invalid attempt to destructure non-iterable instance");
-        }
-    };
+  function sliceIterator(arr, i) {
+    var _arr = [];var _n = true;var _d = false;var _e = undefined;try {
+      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;_e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"]) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }return _arr;
+  }return function (arr, i) {
+    if (Array.isArray(arr)) {
+      return arr;
+    } else if (Symbol.iterator in Object(arr)) {
+      return sliceIterator(arr, i);
+    } else {
+      throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    }
+  };
 }();
 
 var d3 = require('d3');
 
 var getTimeOfDay = function getTimeOfDay(secs) {
-    var hour = Math.floor(secs / 3600);
-    var amPm = hour < 12 ? 'AM' : 'PM';
-    var hour12 = hour <= 12 ? hour : hour - 12;
-    var mins = Math.floor((secs - hour * 3600) / 60);
-    var minPad = ('0' + mins).substr(mins.toString().length - 1);
-    return hour12 + ':' + minPad + amPm;
+  var hour = Math.floor(secs / 3600);
+  var amPm = hour < 12 ? 'AM' : 'PM';
+  var hour12 = hour <= 12 ? hour : hour - 12;
+  var mins = Math.floor((secs - hour * 3600) / 60);
+  var minPad = ('0' + mins).substr(mins.toString().length - 1);
+  return hour12 + ':' + minPad + amPm;
 };
 
-// makes an invisible div to be used as the text input for tagging activities. 
+// makes an invisible div to be used as the text input for tagging activities.
 var makeTagInput = function makeTagInput(_ref) {
-    var sel = _ref.sel;
+  var sel = _ref.sel;
 
-    var tagBody = sel.append('div').attr('class', 'tooltip').style('position', 'absolute').style('text-align', 'left').style('padding', '8px').style('font', '14px optima').style('background', 'lightsteelblue').style('border', 0).style('border-radius', '8px').style('top', '28px');
+  var tagBody = sel.append('div').attr('class', 'tooltip').style('position', 'absolute').style('text-align', 'left').style('padding', '8px').style('font', '14px optima').style('background', 'lightsteelblue').style('border', 0).style('border-radius', '8px').style('top', '28px');
 
-    var tagText = tagBody.append('span');
+  var tagText = tagBody.append('span');
 
-    // line break to give space
-    tagBody.append('br');
+  // line break to give space
+  tagBody.append('br');
 
-    var tagInput = tagBody.append('input').attr('type', 'text').attr('name', 'activity_tag').style('margin-top', '4px');
+  var tagForm = tagBody.append('form').on('submit', function () {
+    // deal with form submit default behavior
+    d3.event.preventDefault();
+    console.log('user has submitted form');
+  });
 
-    // submit button
-    tagBody.append('input').attr('type', 'submit').attr('value', 'tag').style('margin-left', '3px');
+  // Wrap tagging in a form element to allow for enter to be used to submit a tag.
+  var tagInput = tagForm.append('input').attr('type', 'text').attr('name', 'activity_tag').style('margin-top', '4px');
 
-    var changeTime = function changeTime(_ref2) {
-        var _ref3 = _slicedToArray(_ref2, 2),
-            start = _ref3[0],
-            end = _ref3[1];
+  // submit button
+  tagForm.append('input').attr('type', 'submit').attr('value', 'tag').style('margin-left', '3px');
 
-        tagText.text('Between ' + getTimeOfDay(start) + ' and ' + getTimeOfDay(end) + ' I:');
-    };
+  // change the time of our tag window
+  var changeTime = function changeTime(_ref2) {
+    var _ref3 = _slicedToArray(_ref2, 2),
+        start = _ref3[0],
+        end = _ref3[1];
 
-    var hide = function hide() {
-        tagBody.transition().duration(200).style('opacity', 0);
-    };
+    tagText.text('Between ' + getTimeOfDay(start) + ' and ' + getTimeOfDay(end) + ':');
+  };
 
-    var move = function move(position) {
-        var transition = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+  // fade tagger to invisible
+  var hide = function hide() {
+    tagBody.transition().duration(200).style('opacity', 0).style('display', 'none');
+  };
 
-        console.log('im being moved now');
-        tagBody.transition().duration(transition ? 200 : 0).style('opacity', .9).style('left', position + 40 + 'px');
-    };
-    return {
-        move: move,
-        changeTime: changeTime,
-        hide: hide,
-        main: tagBody,
-        message: tagText,
-        input: tagInput
-    };
+  // move tagger around. Transition property allows it to be animated or not.
+  var move = function move(position) {
+    var transition = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+    console.log('im being moved now');
+    tagBody.transition().duration(transition ? 200 : 0).style('opacity', 0.9).style('display', 'inline').style('left', position + 40 + 'px');
+  };
+
+  return {
+    move: move,
+    changeTime: changeTime,
+    hide: hide,
+    main: tagBody,
+    message: tagText,
+    input: tagInput
+  };
 };
 
 var makeBrush = function makeBrush(_ref4) {
-    var width = _ref4.width,
-        height = _ref4.height,
-        _ref4$padding = _ref4.padding,
-        padding = _ref4$padding === undefined ? 15 : _ref4$padding,
-        scales = _ref4.scales,
-        tagInput = _ref4.tagInput,
-        _ref4$onBrush = _ref4.onBrush,
-        onBrush = _ref4$onBrush === undefined ? function (extents) {
-        return console.log(extents);
-    } : _ref4$onBrush;
+  var width = _ref4.width,
+      height = _ref4.height,
+      _ref4$padding = _ref4.padding,
+      padding = _ref4$padding === undefined ? 15 : _ref4$padding,
+      scales = _ref4.scales,
+      tagInput = _ref4.tagInput,
+      _ref4$onBrush = _ref4.onBrush,
+      onBrush = _ref4$onBrush === undefined ? function (extents) {
+    return console.log(extents);
+  } : _ref4$onBrush;
 
-    // converts pixel units to seconds into day and passes the extend of our brush to our callback. 
-    function brushMove() {
-        try {
-            var s = d3.event.selection;
-            console.log('selection', s);
+  /** converts pixel units to seconds into day and passes the extend of our brush to our callback. */
+  function brushMove() {
+    try {
+      var s = d3.event.selection;
+      var timeRange = s.map(function (t) {
+        return scales.toSeconds(t);
+      });
 
-            var timeRange = s.map(function (t) {
-                return scales.toSeconds(t);
-            });
-            onBrush(timeRange);
+      // update our tagging tooltip
+      tagInput.changeTime(timeRange);
+      tagInput.move(s[0], false);
 
-            tagInput.changeTime(timeRange);
-            tagInput.move(d3.event.selection[0], false);
-        } catch (err) {
-            console.log('oops, didn\'t select anything');
-        }
-    };
+      // do passed action for brushing.
+      onBrush(timeRange);
+    } catch (err) {
+      console.log('oops, didn\'t select anything');
+      tagInput.hide();
+    }
+  }
 
-    return d3.brushX().extent([[0, 0], [width, height]]).on('start', function () {
-        console.log('started brushing');
-        tagInput.move(d3.event.selection[0]);
-    }).on('brush', brushMove).on('end', function () {
-        tagInput.move(d3.event.selection[0]);
-    });
+  return d3.brushX().extent([[0, 0], [width, height]]).on('brush end', brushMove);
 };
 
 module.exports = {
-    makeBrush: makeBrush,
-    makeTagInput: makeTagInput
+  makeBrush: makeBrush,
+  makeTagInput: makeTagInput
 };
 
 },{"d3":1}],5:[function(require,module,exports){
@@ -21558,109 +21570,109 @@ var d3 = require('d3');
 var moment = require('moment');
 
 var secondsToTime = function secondsToTime(secs) {
-    return moment().startOf('day').seconds(secs);
+  return moment().startOf('day').seconds(secs);
 };
 
 var timeFormat = d3.timeFormat('%I %p');
 
 var subsetData = function subsetData(_ref) {
-    var data = _ref.data,
-        type = _ref.type,
-        _ref$xVal = _ref.xVal,
-        xVal = _ref$xVal === undefined ? 'time' : _ref$xVal,
-        _ref$yVal = _ref.yVal,
-        yVal = _ref$yVal === undefined ? 'value' : _ref$yVal;
-    return data.filter(function (d) {
-        return d.type == type;
-    }).map(function (d) {
-        return {
-            x: secondsToTime(+d[xVal]),
-            y: +d[yVal]
-        };
-    });
+  var data = _ref.data,
+      type = _ref.type,
+      _ref$xVal = _ref.xVal,
+      xVal = _ref$xVal === undefined ? 'time' : _ref$xVal,
+      _ref$yVal = _ref.yVal,
+      yVal = _ref$yVal === undefined ? 'value' : _ref$yVal;
+  return data.filter(function (d) {
+    return d.type == type;
+  }).map(function (d) {
+    return {
+      x: secondsToTime(+d[xVal]),
+      y: +d[yVal]
+    };
+  });
 };
 
 var appendSVG = function appendSVG(_ref2) {
-    var sel = _ref2.sel,
-        height = _ref2.height,
-        width = _ref2.width,
-        margin = _ref2.margin;
-    return sel.append('svg').attr('width', width).attr('height', height).style('user-select', 'none').style('cursor', 'default').append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+  var sel = _ref2.sel,
+      height = _ref2.height,
+      width = _ref2.width,
+      margin = _ref2.margin;
+  return sel.append('svg').attr('width', width).attr('height', height).style('user-select', 'none').style('cursor', 'default').append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 };
 
 var makeScales = function makeScales(_ref3) {
-    var raw_data = _ref3.raw_data,
-        data = _ref3.data,
-        yMax = _ref3.yMax,
-        height = _ref3.height,
-        width = _ref3.width;
+  var raw_data = _ref3.raw_data,
+      data = _ref3.data,
+      yMax = _ref3.yMax,
+      height = _ref3.height,
+      width = _ref3.width;
 
-    var x = d3.scaleTime().domain([secondsToTime(0), secondsToTime(86400)]).range([0, width]);
+  var x = d3.scaleTime().domain([secondsToTime(0), secondsToTime(86400)]).range([0, width]);
 
-    var y = d3.scaleLinear().domain([0, yMax]).range([height, 0]);
+  var y = d3.scaleLinear().domain([0, yMax]).range([height, 0]);
 
-    // pixels back into seconds. 
-    var toSeconds = d3.scaleLinear().domain([0, width]).range(d3.extent(raw_data, function (d) {
-        return +d.time;
-    }));
+  // pixels back into seconds.
+  var toSeconds = d3.scaleLinear().domain([0, width]).range(d3.extent(raw_data, function (d) {
+    return +d.time;
+  }));
 
-    return { x: x, y: y, toSeconds: toSeconds };
+  return { x: x, y: y, toSeconds: toSeconds };
 };
 
 var drawAxes = function drawAxes(_ref4) {
-    var svg = _ref4.svg,
-        scales = _ref4.scales,
-        height = _ref4.height,
-        font = _ref4.font;
+  var svg = _ref4.svg,
+      scales = _ref4.scales,
+      height = _ref4.height,
+      font = _ref4.font;
 
-    // Add the X Axis
-    svg.append('g').attr('transform', 'translate(0,' + height + ')').call(d3.axisBottom(scales.x).tickFormat(timeFormat));
+  // Add the X Axis
+  svg.append('g').attr('transform', 'translate(0,' + height + ')').call(d3.axisBottom(scales.x).tickFormat(timeFormat));
 
-    // Add the Y Axis
-    svg.append('g').call(d3.axisLeft(scales.y).ticks(5));
+  // Add the Y Axis
+  svg.append('g').call(d3.axisLeft(scales.y).ticks(5));
 
-    // givem a better font
-    svg.selectAll('.tick text').attr('font-family', font);
+  // givem a better font
+  svg.selectAll('.tick text').attr('font-family', font);
 };
 
 var makeLine = function makeLine(_ref5) {
-    var scales = _ref5.scales;
-    return d3.area().x(function (d) {
-        return scales.x(d.x);
-    }).y(function (d) {
-        return scales.y(d.y);
-    });
+  var scales = _ref5.scales;
+  return d3.area().x(function (d) {
+    return scales.x(d.x);
+  }).y(function (d) {
+    return scales.y(d.y);
+  });
 };
 
 var makeArea = function makeArea(_ref6) {
-    var scales = _ref6.scales;
-    return d3.area().curve(d3.curveStepAfter).x(function (d) {
-        return scales.x(d.x);
-    }).y(function (d) {
-        return scales.y(0);
-    }).y1(function (d) {
-        return scales.y(d.y);
-    });
+  var scales = _ref6.scales;
+  return d3.area().curve(d3.curveStepAfter).x(function (d) {
+    return scales.x(d.x);
+  }).y(function (d) {
+    return scales.y(0);
+  }).y1(function (d) {
+    return scales.y(d.y);
+  });
 };
 
 var writeDate = function writeDate(_ref7) {
-    var date = _ref7.date,
-        margin = _ref7.margin,
-        width = _ref7.width,
-        height = _ref7.height,
-        svg = _ref7.svg,
-        font = _ref7.font;
-    return svg.append('g').attr('class', 'current_date').attr('transform', 'translate(' + (width + margin.right / 3) + ', ' + height / 2 + ' ) rotate(90)').append('text').attr('text-anchor', 'middle').attr('font-family', font).attr('font-size', 20).text(moment(date).format('MMM  DD'));
+  var date = _ref7.date,
+      margin = _ref7.margin,
+      width = _ref7.width,
+      height = _ref7.height,
+      svg = _ref7.svg,
+      font = _ref7.font;
+  return svg.append('g').attr('class', 'current_date').attr('transform', 'translate(' + (width + margin.right / 3) + ', ' + height / 2 + ' ) rotate(90)').append('text').attr('text-anchor', 'middle').attr('font-family', font).attr('font-size', 20).text(moment(date).format('MMM  DD'));
 };
 
 module.exports = {
-    subsetData: subsetData,
-    appendSVG: appendSVG,
-    makeScales: makeScales,
-    drawAxes: drawAxes,
-    makeLine: makeLine,
-    makeArea: makeArea,
-    writeDate: writeDate
+  subsetData: subsetData,
+  appendSVG: appendSVG,
+  makeScales: makeScales,
+  drawAxes: drawAxes,
+  makeLine: makeLine,
+  makeArea: makeArea,
+  writeDate: writeDate
 };
 
 },{"d3":1,"moment":2}],6:[function(require,module,exports){

@@ -21,6 +21,7 @@
     "browserify": "^14.4.0",
     "eslint": "4.2.0",
     "eslint-config-google": "0.9.1",
+    "prettier-eslint": "6.4.2",
     "watchify": "^3.9.0"
   },
   "browserify": {
