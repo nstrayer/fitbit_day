@@ -5,6 +5,7 @@
     },
     "rules":{
         "max-len": "warn",
-        "max-len/ignoreComment": "off"
+        "max-len/ignoreComment": "off",
+        "no-invalid-this": "off"
     }
 }

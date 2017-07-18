@@ -21335,9 +21335,9 @@ return hooks;
 'use strict';
 
 function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
+    if (!(instance instanceof Constructor)) {
+        throw new TypeError("Cannot call a class as a function");
+    }
 }
 
 var d3 = require('d3');
@@ -21353,74 +21353,69 @@ var _require = require('./helpers'),
 
 var _require2 = require('./brushHelpers'),
     makeBrush = _require2.makeBrush,
-    makeTagInput = _require2.makeTagInput;
+    TagInput = _require2.TagInput;
 
 /** Takes time series data from a single day and plots a nice little day long series of heartrate and steps together */
 
 var SingleDay =
 /** Takes a bunch of self explanatory variables, but mostly the data as a json file and the date */
 function SingleDay(_ref) {
-  var data = _ref.data,
-      date = _ref.date,
-      _ref$domTarget = _ref.domTarget,
-      domTarget = _ref$domTarget === undefined ? 'viz' : _ref$domTarget,
-      _ref$height = _ref.height,
-      height = _ref$height === undefined ? 200 : _ref$height,
-      _ref$width = _ref.width,
-      width = _ref$width === undefined ? 1000 : _ref$width,
-      _ref$yMax = _ref.yMax,
-      yMax = _ref$yMax === undefined ? 200 : _ref$yMax,
-      _ref$lineThickness = _ref.lineThickness,
-      lineThickness = _ref$lineThickness === undefined ? 1 : _ref$lineThickness,
-      _ref$hrColor = _ref.hrColor,
-      hrColor = _ref$hrColor === undefined ? '#8da0cb' : _ref$hrColor,
-      _ref$stepsColor = _ref.stepsColor,
-      stepsColor = _ref$stepsColor === undefined ? '#66c2a5' : _ref$stepsColor,
-      _ref$font = _ref.font,
-      font = _ref$font === undefined ? 'avenir' : _ref$font,
-      _ref$margin = _ref.margin,
-      margin = _ref$margin === undefined ? { left: 40, right: 80, top: 60, bottom: 30 } : _ref$margin;
+    var data = _ref.data,
+        date = _ref.date,
+        _ref$domTarget = _ref.domTarget,
+        domTarget = _ref$domTarget === undefined ? 'viz' : _ref$domTarget,
+        _ref$height = _ref.height,
+        height = _ref$height === undefined ? 200 : _ref$height,
+        _ref$width = _ref.width,
+        width = _ref$width === undefined ? 1000 : _ref$width,
+        _ref$yMax = _ref.yMax,
+        yMax = _ref$yMax === undefined ? 200 : _ref$yMax,
+        _ref$lineThickness = _ref.lineThickness,
+        lineThickness = _ref$lineThickness === undefined ? 1 : _ref$lineThickness,
+        _ref$hrColor = _ref.hrColor,
+        hrColor = _ref$hrColor === undefined ? '#8da0cb' : _ref$hrColor,
+        _ref$stepsColor = _ref.stepsColor,
+        stepsColor = _ref$stepsColor === undefined ? '#66c2a5' : _ref$stepsColor,
+        _ref$font = _ref.font,
+        font = _ref$font === undefined ? 'avenir' : _ref$font,
+        _ref$margin = _ref.margin,
+        margin = _ref$margin === undefined ? { left: 40, right: 80, top: 60, bottom: 30 } : _ref$margin;
 
-  _classCallCheck(this, SingleDay);
+    _classCallCheck(this, SingleDay);
 
-  var hrData = subsetData({ data: data, type: 'heart rate' });
-  var stepsData = subsetData({ data: data, type: 'steps' });
-  var sel = d3.select('#' + domTarget).html('');
-  var vizWidth = width - margin.left - margin.right;
-  var vizHeight = height - margin.top - margin.bottom;
-  var svg = appendSVG({ sel: sel, height: height, width: width, margin: margin });
-  var scales = makeScales({
-    raw_data: data,
-    data: hrData,
-    yMax: yMax,
-    height: vizHeight,
-    width: vizWidth
-  });
-  var line = makeLine({ scales: scales });
-  var area = makeArea({ scales: scales });
-  var tagInput = makeTagInput({ sel: sel });
-  var tagBrush = makeBrush({
-    height: vizHeight,
-    width: vizWidth,
-    tagInput: tagInput,
-    onBrush: function onBrush(ext) {
-      return console.log('weeeee!');
-    },
-    scales: scales
-  });
+    var hrData = subsetData({ data: data, type: 'heart rate' });
+    var stepsData = subsetData({ data: data, type: 'steps' });
+    var sel = d3.select('#' + domTarget).html('');
+    var vizWidth = width - margin.left - margin.right;
+    var vizHeight = height - margin.top - margin.bottom;
+    var svg = appendSVG({ sel: sel, height: height, width: width, margin: margin });
+    var scales = makeScales({
+        raw_data: data,
+        data: hrData,
+        yMax: yMax,
+        height: vizHeight,
+        width: vizWidth
+    });
+    var line = makeLine({ scales: scales });
+    var area = makeArea({ scales: scales });
 
-  // plot the axes
-  drawAxes({ svg: svg, scales: scales, height: vizHeight, font: font });
-  writeDate({ date: date, margin: margin, width: vizWidth, height: vizHeight, svg: svg, font: font });
+    var tagInput = new TagInput({
+        svg: svg,
+        sel: sel,
+        height: vizHeight,
+        width: vizWidth,
+        scales: scales
+    });
 
-  // heart rate line
-  svg.append('g').append('path').attr('d', line(hrData)).style('stroke', hrColor).style('stroke-width', lineThickness).style('fill', 'none');
+    // plot the axes
+    drawAxes({ svg: svg, scales: scales, height: vizHeight, font: font });
+    writeDate({ date: date, margin: margin, width: vizWidth, height: vizHeight, svg: svg, font: font });
 
-  // steps line
-  svg.append('g').append('path').attr('d', area(stepsData)).style('fill', stepsColor).style('fill-opacity', 0.5);
+    // heart rate line
+    svg.append('g').append('path').attr('d', line(hrData)).style('stroke', hrColor).style('stroke-width', lineThickness).style('fill', 'none');
 
-  // tagging brush
-  svg.append('g').attr('class', 'brush').call(tagBrush);
+    // steps line
+    svg.append('g').append('path').attr('d', area(stepsData)).style('fill', stepsColor).style('fill-opacity', 0.5);
 }
 
 // method for drawing/redrawing (e.g. on resize)
@@ -21457,6 +21452,22 @@ var _slicedToArray = function () {
   };
 }();
 
+var _createClass = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+  };
+}();
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
 var d3 = require('d3');
 
 var getTimeOfDay = function getTimeOfDay(secs) {
@@ -21468,72 +21479,132 @@ var getTimeOfDay = function getTimeOfDay(secs) {
   return hour12 + ':' + minPad + amPm;
 };
 
-// makes an invisible div to be used as the text input for tagging activities.
-var makeTagInput = function makeTagInput(_ref) {
-  var sel = _ref.sel;
+/** Makes an invisible div to be used as the text input for tagging activities.
+ * Also handles a good amount of the logic behind using this tagging interface. 
+ */
 
-  var tagBody = sel.append('div').attr('class', 'tooltip').style('position', 'absolute').style('text-align', 'left').style('padding', '8px').style('font', '14px optima').style('background', 'lightsteelblue').style('border', 0).style('border-radius', '8px').style('top', '28px');
+var TagInput = function () {
+  /** Only requires the d3 selection of the div the visualization is in.*/
+  function TagInput(_ref) {
+    var _this = this;
 
-  var tagText = tagBody.append('span');
+    var svg = _ref.svg,
+        sel = _ref.sel,
+        height = _ref.height,
+        width = _ref.width,
+        scales = _ref.scales,
+        _ref$onTag = _ref.onTag,
+        onTag = _ref$onTag === undefined ? function (e) {
+      return console.log(e);
+    } : _ref$onTag;
 
-  // line break to give space
-  tagBody.append('br');
+    _classCallCheck(this, TagInput);
 
-  var tagForm = tagBody.append('form').on('submit', function () {
-    // deal with form submit default behavior
-    d3.event.preventDefault();
-    console.log('user has submitted form');
-  });
+    // Variable to store the time ranges for selections. In seconds into day.
+    this.sel = sel;
+    this.timeRange = [];
+    this.onTag = onTag;
 
-  // Wrap tagging in a form element to allow for enter to be used to submit a tag.
-  var tagInput = tagForm.append('input').attr('type', 'text').attr('name', 'activity_tag').style('margin-top', '4px');
+    // Initialize the brush for actual highlighting
+    makeBrush({
+      svg: svg,
+      width: width,
+      height: height,
+      tagInput: this,
+      onTag: onTag,
+      scales: scales
+    });
 
-  // submit button
-  tagForm.append('input').attr('type', 'submit').attr('value', 'tag').style('margin-left', '3px');
+    // Main container div for all selection.
+    this.tagBody = sel.append('div').style('position', 'absolute').style('text-align', 'left').style('padding', '8px').style('font', '14px optima').style('background', 'lightsteelblue').style('border', 0).style('display', 'none').style('border-radius', '8px').style('top', '28px');
 
-  // change the time of our tag window
-  var changeTime = function changeTime(_ref2) {
-    var _ref3 = _slicedToArray(_ref2, 2),
-        start = _ref3[0],
-        end = _ref3[1];
+    this.tagText = this.tagBody.append('span');
 
-    tagText.text('Between ' + getTimeOfDay(start) + ' and ' + getTimeOfDay(end) + ':');
-  };
+    // line break to give space
+    this.tagBody.append('br');
 
-  // fade tagger to invisible
-  var hide = function hide() {
-    tagBody.transition().duration(200).style('opacity', 0).style('display', 'none');
-  };
+    this.tagForm = this.tagBody.append('form');
 
-  // move tagger around. Transition property allows it to be animated or not.
-  var move = function move(position) {
-    var transition = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    // Wrap tagging in a form element to allow for enter to be used to submit a tag.
+    this.tagInput = this.tagForm.append('input').attr('type', 'text').attr('name', 'activity_tag').style('margin-top', '4px');
 
-    console.log('im being moved now');
-    tagBody.transition().duration(transition ? 200 : 0).style('opacity', 0.9).style('display', 'inline').style('left', position + 40 + 'px');
-  };
+    // submit button
+    this.tagForm.append('input').attr('type', 'submit').attr('value', 'tag').style('margin-left', '3px');
 
-  return {
-    move: move,
-    changeTime: changeTime,
-    hide: hide,
-    main: tagBody,
-    message: tagText,
-    input: tagInput
-  };
-};
+    // deal with form submit behavior
+    this.tagForm.on('submit', function () {
+      d3.event.preventDefault();
+      var tag = _this.tagInput._groups[0][0].value;
+
+      // check to make sure the user put in some form of a tag.
+      var tagEmpty = tag === '';
+      if (tagEmpty) {
+        alert('Please enter a tag label.');
+        return;
+      }
+
+      // pass info to whatever tagging callback we have.
+      _this.onTag({
+        tag: tag,
+        start: _this.timeRange[0],
+        end: _this.timeRange[1]
+      });
+      _this.hide();
+    });
+  } // end constructor
+
+  /** change the time of our tag window*/
+
+  _createClass(TagInput, [{
+    key: 'changeTime',
+    value: function changeTime(_ref2) {
+      var _ref3 = _slicedToArray(_ref2, 2),
+          start = _ref3[0],
+          end = _ref3[1];
+
+      // update the time range values
+      this.timeRange = [start, end];
+      this.tagText.text('Between ' + getTimeOfDay(start) + ' and ' + getTimeOfDay(end) + ':');
+    }
+
+    /** fade tagger to invisible*/
+
+  }, {
+    key: 'hide',
+    value: function hide() {
+      // hide the tagging container
+      this.tagBody.transition().duration(200).style('opacity', 0).on('end', function () {
+        d3.select(this).style('display', 'none');
+      });
+
+      // also hide the brush rectangle d3 auto appends.
+      this.sel.select('.selection').transition().duration(200).style('fill-opacity', 0).on('end', function () {
+        d3.select(this).style('display', 'none').style('fill-opacity', 0.3);
+      });
+    }
+
+    /** move tagger around. Transition property allows it to be animated or not.*/
+
+  }, {
+    key: 'move',
+    value: function move(position) {
+      var transition = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+      this.tagBody.transition().duration(transition ? 200 : 0).style('opacity', 0.9).style('display', 'inline').style('left', position + 40 + 'px');
+    }
+  }]);
+
+  return TagInput;
+}();
 
 var makeBrush = function makeBrush(_ref4) {
-  var width = _ref4.width,
+  var svg = _ref4.svg,
+      width = _ref4.width,
       height = _ref4.height,
       _ref4$padding = _ref4.padding,
       padding = _ref4$padding === undefined ? 15 : _ref4$padding,
       scales = _ref4.scales,
-      tagInput = _ref4.tagInput,
-      _ref4$onBrush = _ref4.onBrush,
-      onBrush = _ref4$onBrush === undefined ? function (extents) {
-    return console.log(extents);
-  } : _ref4$onBrush;
+      tagInput = _ref4.tagInput;
 
   /** converts pixel units to seconds into day and passes the extend of our brush to our callback. */
   function brushMove() {
@@ -21546,21 +21617,20 @@ var makeBrush = function makeBrush(_ref4) {
       // update our tagging tooltip
       tagInput.changeTime(timeRange);
       tagInput.move(s[0], false);
-
-      // do passed action for brushing.
-      onBrush(timeRange);
     } catch (err) {
       console.log('oops, didn\'t select anything');
       tagInput.hide();
     }
   }
 
-  return d3.brushX().extent([[0, 0], [width, height]]).on('brush end', brushMove);
+  var brush = d3.brushX().extent([[0, 0], [width, height]]).on('brush end', brushMove);
+
+  svg.append('g').attr('class', 'brush').call(brush);
 };
 
 module.exports = {
   makeBrush: makeBrush,
-  makeTagInput: makeTagInput
+  TagInput: TagInput
 };
 
 },{"d3":1}],5:[function(require,module,exports){

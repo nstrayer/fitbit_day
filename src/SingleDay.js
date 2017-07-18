@@ -10,7 +10,7 @@ const {
   writeDate,
 } = require('./helpers');
 
-const {makeBrush, makeTagInput} = require('./brushHelpers');
+const {makeBrush, TagInput} = require('./brushHelpers');
 
 /** Takes time series data from a single day and plots a nice little day long series of heartrate and steps together */
 class SingleDay {
@@ -43,14 +43,15 @@ class SingleDay {
     });
     const line = makeLine({scales});
     const area = makeArea({scales});
-    const tagInput = makeTagInput({sel});
-    const tagBrush = makeBrush({
+
+    const tagInput = new TagInput({
+      svg,
+      sel,
       height: vizHeight,
       width: vizWidth,
-      tagInput,
-      onBrush: (ext) => console.log('weeeee!'),
       scales,
     });
+
 
     // plot the axes
     drawAxes({svg, scales, height: vizHeight, font});
@@ -72,9 +73,6 @@ class SingleDay {
       .attr('d', area(stepsData))
       .style('fill', stepsColor)
       .style('fill-opacity', 0.5);
-
-    // tagging brush
-    svg.append('g').attr('class', 'brush').call(tagBrush);
   }
 
   // method for drawing/redrawing (e.g. on resize)
