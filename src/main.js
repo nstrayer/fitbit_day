@@ -1,6 +1,7 @@
 const SingleDay = require('./SingleDay');
 const {groupByDate} = require('./dataHelpers');
 const {makeDivForDay, dateToId, makeScales} = require('./chartHelpers');
+const {Set1: colors} = require('colorbrewer');
 
 // Sets up all the individual day plots and
 // stores them in an array.
@@ -15,13 +16,31 @@ const drawAndStoreDays = ({groupedData, scales, margins, sel, onTag}) =>
     })
   );
 
+
 // on reciept of a new tag adds it to global tags and sends new tag off to thier respective day's viz.
 const newTag = ({
   tag,
   tags,
+  tagColors,
+  colorScale,
   dayPlots,
 }) => {
+  const tagName = tag.tag;
+
+  // have we seen this tag before?
+  const tagSeen = tagColors.hasOwnProperty(tagName);
+
+  // if the tag is new lets assign it a color!
+  if (!tagSeen) {
+    tagColors[tagName] = colorScale.shift();
+  }
+
+  // assign a color to the tag and push it to the big tags list. 
+  tag.color = tagColors[tagName];
+  
   tags.push(tag);
+
+  console.table(tags);
 
   dayPlots.forEach((day) => day.updateTags(tags));
 };
@@ -45,6 +64,8 @@ class VisualizeDays {
 
     // stores all the users tags [{tag, date, start, end}, ...]
     this.tags = [];
+    this.colorScale = colors[9];
+    this.tagColors = {};
 
     // generate a common set of scales for all the days.
     const scales = makeScales({
@@ -60,7 +81,13 @@ class VisualizeDays {
       scales,
       margins: dayMargins,
       sel: this.sel,
-      onTag: (tag) => newTag({tag, tags: this.tags, dayPlots: this.dayPlots}),
+      onTag: (tag) => newTag({
+        tag, 
+        tags: this.tags, 
+        tagColors: this.tagColors, 
+        colorScale: this.colorScale,
+        dayPlots: this.dayPlots,
+      }),
     });
   };
 }

@@ -13,6 +13,7 @@ const {
 } = require('./chartHelpers');
 
 const Tagger = require('./Tagger/Tagger');
+const TagViz = require('./TagViz');
 
 /** Takes time series data from a single day and plots a nice little day long series of heartrate and steps together */
 class SingleDay {
@@ -42,6 +43,7 @@ class SingleDay {
     stepsColor = '#66c2a5',
     font = 'avenir',
   }) {
+    this.date = date;
     const hrData = subsetData({data, type: 'heart rate'});
     const stepsData = subsetData({data, type: 'steps'});
     const vizWidth = width - margins.left - margins.right;
@@ -49,7 +51,6 @@ class SingleDay {
     const svg = appendSVG({sel, height, width, margins});
     const line = makeLine({scales});
     const area = makeArea({scales});
-    const tags = [];
 
     // set up a tagging system for this day
     const tagger = new Tagger({
@@ -62,12 +63,12 @@ class SingleDay {
       onTag,
     });
 
-    // const tagViz = new TagViz({
-    //   svg,
-    //   scales,
-    //   height: vizHeight,
-    //   width: vizWidth,
-    // });
+    this.tagViz = new TagViz({
+      svg,
+      scales,
+      height: vizHeight,
+      width: vizWidth,
+    });
 
 
     // plot the axes
@@ -94,7 +95,9 @@ class SingleDay {
 
   /** Gets new tags and visualizes them */
   updateTags(tags) {
-    console.log('updating tags!', tags);
+    // filter tags to this day
+    const todaysTags = tags.filter((tag) => tag.date === this.date);
+    this.tagViz.draw(todaysTags);
   }
   // method for drawing/redrawing (e.g. on resize)
 }

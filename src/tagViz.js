@@ -1,6 +1,5 @@
 // const d3 = require('d3');
 const {secondsToTime} = require('./timeHelpers');
-const {Set1: colors} = require('colorbrewer');
 
 /** Is supplied with a svg object and some config options and then exposes 
  *  a way of plotting tagged events when supplied with an array of tags. 
@@ -10,7 +9,6 @@ class TagViz {
   constructor({svg, scales, width, height, barThickness = 25}) {
     this.tagG = svg.append('g').attr('class', 'tags_container');
 
-    this.colorScale = colors[9];
     this.scales = scales;
     this.width = width;
     this.height = height;
@@ -26,13 +24,6 @@ class TagViz {
    * [ {tag: <tagname>, start: <start in seconds>, end: <end in seconds>}...]
    */
   draw(tags) {
-    // find unique tags and then give them colors.
-    const tagColors = [...new Set(tags.map((tag) => tag.tag))].reduce(
-      (colorObj, unique, i) =>
-        Object.assign(colorObj, {[unique]: this.colorScale[i]}),
-      {}
-    );
-
     // JOIN data to our tags holder
     const tagBars = this.tagG.selectAll('.tag_bar').data(tags, (d) => d.start);
 
@@ -42,7 +33,7 @@ class TagViz {
     // UPDATE elements that were still there, not sure when this happens
     tagBars
       .transition(this.trans)
-      .style('fill', (d) => tagColors[d.tag])
+      .style('fill', (d) => d.color)
       .attr('x', (d) => this.secToPlot(d.start));
 
     // ENTER new tags
@@ -56,7 +47,7 @@ class TagViz {
       .attr('ry', this.barThickness * 0.5)
       .attr('height', this.barThickness)
       .attr('width', 1e-6)
-      .style('fill', (d) => tagColors[d.tag])
+      .style('fill', (d) => d.color)
       .attr('x', (d) => this.secToPlot(d.start))
       .on('mouseover', (d) => {
         console.log(d.tag);
