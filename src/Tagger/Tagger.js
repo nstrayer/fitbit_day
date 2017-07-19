@@ -10,11 +10,10 @@ class Tagger {
     height,
     width,
     scales,
+    date,
     onTag,
   }) {
     this.allowBrush = true;
-
-    console.log('setting up taggers!');
     
     // set up input
     const tagInput = new TagInput({
@@ -22,6 +21,7 @@ class Tagger {
       sel,
       height,
       width,
+      date,
       scales,
       onTag,
     });
@@ -33,8 +33,12 @@ class Tagger {
       height,
       allowBrush: this.allowBrush,
       scales,
-      onBrush: (range) => tagInput.move(range),
-      onClickOff: () => console.log('user clicked off'),
+      onBrush: (range) => {
+        if (this.allowBrush) {
+          tagInput.move(range);
+        }
+      },
+      onClickOff: () => tagInput.hide(),
     });
   };
 };

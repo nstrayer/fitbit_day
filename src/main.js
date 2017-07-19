@@ -1,25 +1,30 @@
 const SingleDay = require('./SingleDay');
 const {groupByDate} = require('./dataHelpers');
 const {makeDivForDay, dateToId, makeScales} = require('./chartHelpers');
-const TagInput = require('./TagInput');
 
 // Sets up all the individual day plots and
-// stores them in an object keyed by date.
-const drawAndStoreDays = ({groupedData, scales, margins, sel}) =>
-  Object.keys(groupedData).reduce((datePlots, date) => {
-    // set up a div to place this date in
-    const dayDiv = makeDivForDay({sel, date});
-
-    // Assign a plot to the objects slot for the given date.
-    datePlots[date] = new SingleDay({
+// stores them in an array.
+const drawAndStoreDays = ({groupedData, scales, margins, sel, onTag}) =>
+  Object.keys(groupedData).map((date) => new SingleDay({
       data: groupedData[date],
       date,
       scales,
       margins,
-      sel: dayDiv,
-    });
-    return datePlots;
-  }, {});
+      onTag,
+      sel: makeDivForDay({sel, date}),
+    })
+  );
+
+// on reciept of a new tag adds it to global tags and sends new tag off to thier respective day's viz.
+const newTag = ({
+  tag,
+  tags,
+  dayPlots,
+}) => {
+  tags.push(tag);
+
+  dayPlots.forEach((day) => day.updateTags(tags));
+};
 
 /** Main Class docs */
 class VisualizeDays {
@@ -36,6 +41,10 @@ class VisualizeDays {
   }) {
     const groupedData = groupByDate(data);
     this.sel = d3.select(domTarget);
+    this.dayPlots;
+
+    // stores all the users tags [{tag, date, start, end}, ...]
+    this.tags = [];
 
     // generate a common set of scales for all the days.
     const scales = makeScales({
@@ -46,11 +55,12 @@ class VisualizeDays {
     });
 
     // generate plots.
-    const dayPlots = drawAndStoreDays({
+    this.dayPlots = drawAndStoreDays({
       groupedData,
       scales,
       margins: dayMargins,
       sel: this.sel,
+      onTag: (tag) => newTag({tag, tags: this.tags, dayPlots: this.dayPlots}),
     });
   };
 }

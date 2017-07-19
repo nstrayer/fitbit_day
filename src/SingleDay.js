@@ -34,6 +34,7 @@ class SingleDay {
     scales,
     margins,
     sel,
+    onTag,
     height = 200,
     width = 1000,
     lineThickness = 1,
@@ -54,13 +55,11 @@ class SingleDay {
     const tagger = new Tagger({
       svg,
       sel,
+      date,
       width: vizWidth,
       height: vizHeight,
       scales,
-      onTag: (tag) => {
-        tags.push(tag);
-        tagViz.draw(tags);
-      },
+      onTag,
     });
 
     // const tagViz = new TagViz({
@@ -93,6 +92,10 @@ class SingleDay {
       .style('fill-opacity', 0.5);
   }
 
+  /** Gets new tags and visualizes them */
+  updateTags(tags) {
+    console.log('updating tags!', tags);
+  }
   // method for drawing/redrawing (e.g. on resize)
 }
 

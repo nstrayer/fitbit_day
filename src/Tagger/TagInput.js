@@ -13,6 +13,7 @@ class TagInput {
     height,
     width,
     scales,
+    date,
     onTag = (e) => console.log(e),
   }) {
     // Variable to store the time ranges for selections. In seconds into day.
@@ -20,7 +21,6 @@ class TagInput {
     this.timeRange = [];
     this.onTag = onTag;
     this.scales = scales;
-
 
     // Main container div for all selection.
     this.tagBody = sel
@@ -71,6 +71,7 @@ class TagInput {
       // pass info to whatever tagging callback we have.
       this.onTag({
         tag,
+        date,
         start: this.timeRange[0],
         end: this.timeRange[1],
       });
@@ -102,7 +103,12 @@ class TagInput {
 
   /** move tagger around. Transition property allows it to be animated or not.*/
   move([start, end], transition = false) {
+    // update the taggers timerange so tags have proper times
+    this.timeRange = [start, end];
+    // find the x position in pixels from the seconds provided to move. 
     const xPos = this.scales.toSeconds.invert(start);
+
+    // move the tag box to correct place
     this.tagBody
       .transition()
       .duration(transition ? 200 : 0)
@@ -115,6 +121,11 @@ class TagInput {
       `Between ${getTimeOfDay(start)} and ${getTimeOfDay(end)}:`
     );
   }
+
+  /** Programatically change the input text. Helpful for when new tag is on a different day*/
+  changePlaceholder(tag) {
+    this.tagInput._groups[0][0].value = tag;
+  };
 }
 
 module.exports = TagInput;
