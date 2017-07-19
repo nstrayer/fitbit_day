@@ -1,13 +1,6 @@
 const d3 = require('d3');
-
-const getTimeOfDay = (secs) => {
-  const hour = Math.floor(secs / 3600);
-  const amPm = hour < 12 ? 'AM' : 'PM';
-  const hour12 = hour <= 12 ? hour : hour - 12;
-  const mins = Math.floor((secs - hour * 3600) / 60);
-  const minPad = ('0' + mins).substr(mins.toString().length - 1);
-  return `${hour12}:${minPad}${amPm}`;
-};
+const {getTimeOfDay} = require('../timeHelpers');
+const TagBrush = require('./TagBrush');
 
 /** Makes an invisible div to be used as the text input for tagging activities.
  * Also handles a good amount of the logic behind using this tagging interface. 
@@ -26,16 +19,8 @@ class TagInput {
     this.sel = sel;
     this.timeRange = [];
     this.onTag = onTag;
+    this.scales = scales;
 
-    // Initialize the brush for actual highlighting
-    makeBrush({
-      svg,
-      width,
-      height,
-      tagInput: this,
-      onTag,
-      scales,
-    });
 
     // Main container div for all selection.
     this.tagBody = sel
@@ -93,15 +78,6 @@ class TagInput {
     });
   } // end constructor
 
-  /** change the time of our tag window*/
-  changeTime([start, end]) {
-    // update the time range values
-    this.timeRange = [start, end];
-    this.tagText.text(
-      `Between ${getTimeOfDay(start)} and ${getTimeOfDay(end)}:`
-    );
-  }
-
   /** fade tagger to invisible*/
   hide() {
     // hide the tagging container
@@ -125,48 +101,20 @@ class TagInput {
   }
 
   /** move tagger around. Transition property allows it to be animated or not.*/
-  move(position, transition = true) {
+  move([start, end], transition = false) {
+    const xPos = this.scales.toSeconds.invert(start);
     this.tagBody
       .transition()
       .duration(transition ? 200 : 0)
       .style('opacity', 0.9)
       .style('display', 'inline')
-      .style('left', `${position + 40}px`);
+      .style('left', `${xPos + 40}px`);
+
+    // update text of the time. 
+    this.tagText.text(
+      `Between ${getTimeOfDay(start)} and ${getTimeOfDay(end)}:`
+    );
   }
 }
 
-const makeBrush = ({
-  svg,
-  width,
-  height,
-  padding = 15, // This is how much the chart div is padded from the left side of the page.
-  scales,
-  tagInput,
-}) => {
-  /** converts pixel units to seconds into day and passes the extend of our brush to our callback. */
-  function brushMove() {
-    try {
-      const s = d3.event.selection;
-      const timeRange = s.map((t) => scales.toSeconds(t));
-
-      // update our tagging tooltip
-      tagInput.changeTime(timeRange);
-      tagInput.move(s[0], false);
-    } catch (err) {
-      console.log('oops, didn\'t select anything');
-      tagInput.hide();
-    }
-  }
-
-  const brush = d3
-    .brushX()
-    .extent([[0, 0], [width, height]])
-    .on('brush end', brushMove);
-
-  svg.append('g').attr('class', 'brush').call(brush);
-};
-
-module.exports = {
-  makeBrush,
-  TagInput,
-};
+module.exports = TagInput;

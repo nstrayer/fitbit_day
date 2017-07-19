@@ -1,13 +1,14 @@
 const SingleDay = require('./SingleDay');
 const {groupByDate} = require('./dataHelpers');
 const {makeDivForDay, dateToId, makeScales} = require('./chartHelpers');
+const TagInput = require('./TagInput');
 
 // Sets up all the individual day plots and
 // stores them in an object keyed by date.
 const drawAndStoreDays = ({groupedData, scales, margins, sel}) =>
   Object.keys(groupedData).reduce((datePlots, date) => {
     // set up a div to place this date in
-    makeDivForDay({sel, date});
+    const dayDiv = makeDivForDay({sel, date});
 
     // Assign a plot to the objects slot for the given date.
     datePlots[date] = new SingleDay({
@@ -15,7 +16,7 @@ const drawAndStoreDays = ({groupedData, scales, margins, sel}) =>
       date,
       scales,
       margins,
-      domTarget: dateToId(date),
+      sel: dayDiv,
     });
     return datePlots;
   }, {});
@@ -51,7 +52,7 @@ class VisualizeDays {
       margins: dayMargins,
       sel: this.sel,
     });
-  }
+  };
 }
 
 module.exports = VisualizeDays;

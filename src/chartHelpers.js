@@ -80,10 +80,15 @@ const writeDate = ({date, margins, width, height, svg, font}) =>
 // The default -s in the dates cant be used as ids in html.
 const dateToId = (date) => `date_${date.replace(/-/g, '_')}`;
 
-const makeDivForDay = ({sel, date}) => sel
-  .append('div')
-  .style('position', 'relative')
-  .attr('id', dateToId(date));
+const makeDivForDay = ({sel, date}) => {
+  sel
+    .append('div')
+    .style('position', 'relative')
+    .attr('id', dateToId(date))
+    .html('');
+
+  return d3.select('#' + dateToId(date));
+};
 
 module.exports = {
   appendSVG,

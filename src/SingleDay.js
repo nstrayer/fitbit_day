@@ -12,8 +12,7 @@ const {
   writeDate,
 } = require('./chartHelpers');
 
-const {TagInput} = require('./brushHelpers');
-const TagViz = require('./tagViz');
+const Tagger = require('./Tagger/Tagger');
 
 /** Takes time series data from a single day and plots a nice little day long series of heartrate and steps together */
 class SingleDay {
@@ -34,7 +33,7 @@ class SingleDay {
     date,
     scales,
     margins,
-    domTarget,
+    sel,
     height = 200,
     width = 1000,
     lineThickness = 1,
@@ -44,7 +43,6 @@ class SingleDay {
   }) {
     const hrData = subsetData({data, type: 'heart rate'});
     const stepsData = subsetData({data, type: 'steps'});
-    const sel = d3.select('#' + domTarget).html('');
     const vizWidth = width - margins.left - margins.right;
     const vizHeight = height - margins.top - margins.bottom;
     const svg = appendSVG({sel, height, width, margins});
@@ -52,24 +50,26 @@ class SingleDay {
     const area = makeArea({scales});
     const tags = [];
 
-    const tagViz = new TagViz({
-      svg,
-      scales,
-      height: vizHeight,
-      width: vizWidth,
-    });
-
-    const tagInput = new TagInput({
+    // set up a tagging system for this day
+    const tagger = new Tagger({
       svg,
       sel,
-      height: vizHeight,
       width: vizWidth,
+      height: vizHeight,
       scales,
       onTag: (tag) => {
         tags.push(tag);
         tagViz.draw(tags);
       },
     });
+
+    // const tagViz = new TagViz({
+    //   svg,
+    //   scales,
+    //   height: vizHeight,
+    //   width: vizWidth,
+    // });
+
 
     // plot the axes
     drawAxes({svg, scales, height: vizHeight, font});
