@@ -2,46 +2,52 @@ const d3 = require('d3');
 
 const {
   subsetData,
+} = require('./dataHelpers');
+
+const {
   appendSVG,
-  makeScales,
   drawAxes,
   makeLine,
   makeArea,
   writeDate,
-} = require('./helpers');
+} = require('./chartHelpers');
 
 const {TagInput} = require('./brushHelpers');
 const TagViz = require('./tagViz');
 
 /** Takes time series data from a single day and plots a nice little day long series of heartrate and steps together */
 class SingleDay {
-  /** Takes a bunch of self explanatory variables, but mostly the data as a json file and the date */
+  /** Takes a bunch of self explanatory variables, but mostly the data as a json file and the date 
+   * @param {Array} data - This is an array of objects with keys "hr", "steps", and "time".
+   * @param {String} date - String of the date in MM-DD-YYYY format. 
+   * @param {Object} scales - Object housing three d3 scales: x, y, and toSeconds
+   * @param {Object} margins - Follows the standard d3 margin conventions. Gives padding on each side of chart. 
+   * @param {Number} [height = 200] - height in pixels of the days plot
+   * @param {Number} [width = 1000] - Width in pixels of days plot
+   * @param {Number} [lineThickness = 1] - Plot line thickness. 
+   * @param {String} [hrColor = '#8da0cb'] - Hex code for heartrate line color
+   * @param {String} [stepsColor = '#66c2a5'] - Hex code for steps bar color.
+   * @param {String} [font = 'avenir'] - Valid css name for a font for axes. 
+  */
   constructor({
     data,
     date,
-    domTarget = 'viz',
+    scales,
+    margins,
+    domTarget,
     height = 200,
     width = 1000,
-    yMax = 200,
     lineThickness = 1,
     hrColor = '#8da0cb',
     stepsColor = '#66c2a5',
     font = 'avenir',
-    margin = {left: 40, right: 80, top: 60, bottom: 30},
   }) {
     const hrData = subsetData({data, type: 'heart rate'});
     const stepsData = subsetData({data, type: 'steps'});
     const sel = d3.select('#' + domTarget).html('');
-    const vizWidth = width - margin.left - margin.right;
-    const vizHeight = height - margin.top - margin.bottom;
-    const svg = appendSVG({sel, height, width, margin});
-    const scales = makeScales({
-      raw_data: data,
-      data: hrData,
-      yMax,
-      height: vizHeight,
-      width: vizWidth,
-    });
+    const vizWidth = width - margins.left - margins.right;
+    const vizHeight = height - margins.top - margins.bottom;
+    const svg = appendSVG({sel, height, width, margins});
     const line = makeLine({scales});
     const area = makeArea({scales});
     const tags = [];
@@ -67,7 +73,7 @@ class SingleDay {
 
     // plot the axes
     drawAxes({svg, scales, height: vizHeight, font});
-    writeDate({date, margin, width: vizWidth, height: vizHeight, svg, font});
+    writeDate({date, margins, width: vizWidth, height: vizHeight, svg, font});
 
     // heart rate line
     svg

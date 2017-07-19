@@ -21655,100 +21655,102 @@ return hooks;
 'use strict';
 
 function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
+    if (!(instance instanceof Constructor)) {
+        throw new TypeError("Cannot call a class as a function");
+    }
 }
 
 var d3 = require('d3');
 
-var _require = require('./helpers'),
-    subsetData = _require.subsetData,
-    appendSVG = _require.appendSVG,
-    makeScales = _require.makeScales,
-    drawAxes = _require.drawAxes,
-    makeLine = _require.makeLine,
-    makeArea = _require.makeArea,
-    writeDate = _require.writeDate;
+var _require = require('./dataHelpers'),
+    subsetData = _require.subsetData;
 
-var _require2 = require('./brushHelpers'),
-    TagInput = _require2.TagInput;
+var _require2 = require('./chartHelpers'),
+    appendSVG = _require2.appendSVG,
+    drawAxes = _require2.drawAxes,
+    makeLine = _require2.makeLine,
+    makeArea = _require2.makeArea,
+    writeDate = _require2.writeDate;
+
+var _require3 = require('./brushHelpers'),
+    TagInput = _require3.TagInput;
 
 var TagViz = require('./tagViz');
 
 /** Takes time series data from a single day and plots a nice little day long series of heartrate and steps together */
 
 var SingleDay =
-/** Takes a bunch of self explanatory variables, but mostly the data as a json file and the date */
+/** Takes a bunch of self explanatory variables, but mostly the data as a json file and the date 
+ * @param {Array} data - This is an array of objects with keys "hr", "steps", and "time".
+ * @param {String} date - String of the date in MM-DD-YYYY format. 
+ * @param {Object} scales - Object housing three d3 scales: x, y, and toSeconds
+ * @param {Object} margins - Follows the standard d3 margin conventions. Gives padding on each side of chart. 
+ * @param {Number} [height = 200] - height in pixels of the days plot
+ * @param {Number} [width = 1000] - Width in pixels of days plot
+ * @param {Number} [lineThickness = 1] - Plot line thickness. 
+ * @param {String} [hrColor = '#8da0cb'] - Hex code for heartrate line color
+ * @param {String} [stepsColor = '#66c2a5'] - Hex code for steps bar color.
+ * @param {String} [font = 'avenir'] - Valid css name for a font for axes. 
+*/
 function SingleDay(_ref) {
-  var data = _ref.data,
-      date = _ref.date,
-      _ref$domTarget = _ref.domTarget,
-      domTarget = _ref$domTarget === undefined ? 'viz' : _ref$domTarget,
-      _ref$height = _ref.height,
-      height = _ref$height === undefined ? 200 : _ref$height,
-      _ref$width = _ref.width,
-      width = _ref$width === undefined ? 1000 : _ref$width,
-      _ref$yMax = _ref.yMax,
-      yMax = _ref$yMax === undefined ? 200 : _ref$yMax,
-      _ref$lineThickness = _ref.lineThickness,
-      lineThickness = _ref$lineThickness === undefined ? 1 : _ref$lineThickness,
-      _ref$hrColor = _ref.hrColor,
-      hrColor = _ref$hrColor === undefined ? '#8da0cb' : _ref$hrColor,
-      _ref$stepsColor = _ref.stepsColor,
-      stepsColor = _ref$stepsColor === undefined ? '#66c2a5' : _ref$stepsColor,
-      _ref$font = _ref.font,
-      font = _ref$font === undefined ? 'avenir' : _ref$font,
-      _ref$margin = _ref.margin,
-      margin = _ref$margin === undefined ? { left: 40, right: 80, top: 60, bottom: 30 } : _ref$margin;
+    var data = _ref.data,
+        date = _ref.date,
+        scales = _ref.scales,
+        margins = _ref.margins,
+        domTarget = _ref.domTarget,
+        _ref$height = _ref.height,
+        height = _ref$height === undefined ? 200 : _ref$height,
+        _ref$width = _ref.width,
+        width = _ref$width === undefined ? 1000 : _ref$width,
+        _ref$lineThickness = _ref.lineThickness,
+        lineThickness = _ref$lineThickness === undefined ? 1 : _ref$lineThickness,
+        _ref$hrColor = _ref.hrColor,
+        hrColor = _ref$hrColor === undefined ? '#8da0cb' : _ref$hrColor,
+        _ref$stepsColor = _ref.stepsColor,
+        stepsColor = _ref$stepsColor === undefined ? '#66c2a5' : _ref$stepsColor,
+        _ref$font = _ref.font,
+        font = _ref$font === undefined ? 'avenir' : _ref$font;
 
-  _classCallCheck(this, SingleDay);
+    _classCallCheck(this, SingleDay);
 
-  var hrData = subsetData({ data: data, type: 'heart rate' });
-  var stepsData = subsetData({ data: data, type: 'steps' });
-  var sel = d3.select('#' + domTarget).html('');
-  var vizWidth = width - margin.left - margin.right;
-  var vizHeight = height - margin.top - margin.bottom;
-  var svg = appendSVG({ sel: sel, height: height, width: width, margin: margin });
-  var scales = makeScales({
-    raw_data: data,
-    data: hrData,
-    yMax: yMax,
-    height: vizHeight,
-    width: vizWidth
-  });
-  var line = makeLine({ scales: scales });
-  var area = makeArea({ scales: scales });
-  var tags = [];
+    var hrData = subsetData({ data: data, type: 'heart rate' });
+    var stepsData = subsetData({ data: data, type: 'steps' });
+    var sel = d3.select('#' + domTarget).html('');
+    var vizWidth = width - margins.left - margins.right;
+    var vizHeight = height - margins.top - margins.bottom;
+    var svg = appendSVG({ sel: sel, height: height, width: width, margins: margins });
+    var line = makeLine({ scales: scales });
+    var area = makeArea({ scales: scales });
+    var tags = [];
 
-  var tagViz = new TagViz({
-    svg: svg,
-    scales: scales,
-    height: vizHeight,
-    width: vizWidth
-  });
+    var tagViz = new TagViz({
+        svg: svg,
+        scales: scales,
+        height: vizHeight,
+        width: vizWidth
+    });
 
-  var tagInput = new TagInput({
-    svg: svg,
-    sel: sel,
-    height: vizHeight,
-    width: vizWidth,
-    scales: scales,
-    onTag: function onTag(tag) {
-      tags.push(tag);
-      tagViz.draw(tags);
-    }
-  });
+    var tagInput = new TagInput({
+        svg: svg,
+        sel: sel,
+        height: vizHeight,
+        width: vizWidth,
+        scales: scales,
+        onTag: function onTag(tag) {
+            tags.push(tag);
+            tagViz.draw(tags);
+        }
+    });
 
-  // plot the axes
-  drawAxes({ svg: svg, scales: scales, height: vizHeight, font: font });
-  writeDate({ date: date, margin: margin, width: vizWidth, height: vizHeight, svg: svg, font: font });
+    // plot the axes
+    drawAxes({ svg: svg, scales: scales, height: vizHeight, font: font });
+    writeDate({ date: date, margins: margins, width: vizWidth, height: vizHeight, svg: svg, font: font });
 
-  // heart rate line
-  svg.append('g').append('path').attr('d', line(hrData)).style('stroke', hrColor).style('stroke-width', lineThickness).style('fill', 'none');
+    // heart rate line
+    svg.append('g').append('path').attr('d', line(hrData)).style('stroke', hrColor).style('stroke-width', lineThickness).style('fill', 'none');
 
-  // steps line
-  svg.append('g').append('path').attr('d', area(stepsData)).style('fill', stepsColor).style('fill-opacity', 0.5);
+    // steps line
+    svg.append('g').append('path').attr('d', area(stepsData)).style('fill', stepsColor).style('fill-opacity', 0.5);
 }
 
 // method for drawing/redrawing (e.g. on resize)
@@ -21756,7 +21758,7 @@ function SingleDay(_ref) {
 
 module.exports = SingleDay;
 
-},{"./brushHelpers":6,"./helpers":7,"./tagViz":9,"d3":3}],6:[function(require,module,exports){
+},{"./brushHelpers":6,"./chartHelpers":7,"./dataHelpers":8,"./tagViz":10,"d3":3}],6:[function(require,module,exports){
 'use strict';
 
 var _slicedToArray = function () {
@@ -21970,13 +21972,114 @@ module.exports = {
 'use strict';
 
 var d3 = require('d3');
-var moment = require('moment');
 
-var secondsToTime = function secondsToTime(secs) {
-  return moment().startOf('day').seconds(secs);
+var _require = require('./timeHelpers'),
+    secondsToTime = _require.secondsToTime,
+    timeFormat = _require.timeFormat,
+    toMonthDay = _require.toMonthDay;
+
+var appendSVG = function appendSVG(_ref) {
+  var sel = _ref.sel,
+      height = _ref.height,
+      width = _ref.width,
+      margins = _ref.margins;
+  return sel.append('svg').attr('width', width).attr('height', height).style('user-select', 'none').style('cursor', 'default').append('g').attr('transform', 'translate(' + margins.left + ',' + margins.top + ')');
 };
 
-var timeFormat = d3.timeFormat('%I %p');
+var makeScales = function makeScales(_ref2) {
+  var yMax = _ref2.yMax,
+      height = _ref2.height,
+      width = _ref2.width,
+      margins = _ref2.margins;
+
+  var chartWidth = width - margins.left - margins.right;
+  var chartHeight = height - margins.top - margins.bottom;
+
+  var x = d3.scaleTime().domain([secondsToTime(0), secondsToTime(86400)]).range([0, chartWidth]);
+
+  var y = d3.scaleLinear().domain([0, yMax]).range([chartHeight, 0]);
+
+  // pixels back into seconds.
+  var toSeconds = d3.scaleLinear().domain([0, chartWidth]).range([0, 86400]);
+
+  return { x: x, y: y, toSeconds: toSeconds };
+};
+
+var drawAxes = function drawAxes(_ref3) {
+  var svg = _ref3.svg,
+      scales = _ref3.scales,
+      height = _ref3.height,
+      font = _ref3.font;
+
+  // Add the X Axis
+  svg.append('g').attr('transform', 'translate(0,' + height + ')').call(d3.axisBottom(scales.x).tickFormat(timeFormat));
+
+  // Add the Y Axis
+  svg.append('g').call(d3.axisLeft(scales.y).ticks(5));
+
+  // givem a better font
+  svg.selectAll('.tick text').attr('font-family', font);
+};
+
+var makeLine = function makeLine(_ref4) {
+  var scales = _ref4.scales;
+  return d3.area().x(function (d) {
+    return scales.x(d.x);
+  }).y(function (d) {
+    return scales.y(d.y);
+  });
+};
+
+var makeArea = function makeArea(_ref5) {
+  var scales = _ref5.scales;
+  return d3.area().curve(d3.curveStepAfter).x(function (d) {
+    return scales.x(d.x);
+  }).y(function (d) {
+    return scales.y(0);
+  }).y1(function (d) {
+    return scales.y(d.y);
+  });
+};
+
+var writeDate = function writeDate(_ref6) {
+  var date = _ref6.date,
+      margins = _ref6.margins,
+      width = _ref6.width,
+      height = _ref6.height,
+      svg = _ref6.svg,
+      font = _ref6.font;
+  return svg.append('g').attr('class', 'current_date').attr('transform', 'translate(' + (width + margins.right / 3) + ', ' + height / 2 + ' ) rotate(90)').append('text').attr('text-anchor', 'middle').attr('font-family', font).attr('font-size', 20).text(toMonthDay(date));
+};
+
+// The default -s in the dates cant be used as ids in html.
+var dateToId = function dateToId(date) {
+  return 'date_' + date.replace(/-/g, '_');
+};
+
+var makeDivForDay = function makeDivForDay(_ref7) {
+  var sel = _ref7.sel,
+      date = _ref7.date;
+  return sel.append('div').style('position', 'relative').attr('id', dateToId(date));
+};
+
+module.exports = {
+  appendSVG: appendSVG,
+  makeScales: makeScales,
+  drawAxes: drawAxes,
+  makeLine: makeLine,
+  makeArea: makeArea,
+  writeDate: writeDate,
+  dateToId: dateToId,
+  makeDivForDay: makeDivForDay
+};
+
+},{"./timeHelpers":11,"d3":3}],8:[function(require,module,exports){
+'use strict';
+
+var d3 = require('d3');
+
+var _require = require('./timeHelpers'),
+    secondsToTime = _require.secondsToTime;
 
 var subsetData = function subsetData(_ref) {
   var data = _ref.data,
@@ -21995,98 +22098,116 @@ var subsetData = function subsetData(_ref) {
   });
 };
 
-var appendSVG = function appendSVG(_ref2) {
-  var sel = _ref2.sel,
-      height = _ref2.height,
-      width = _ref2.width,
-      margin = _ref2.margin;
-  return sel.append('svg').attr('width', width).attr('height', height).style('user-select', 'none').style('cursor', 'default').append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-};
+var groupByDate = function groupByDate(data) {
+  return data.reduce(function (grouped, current) {
+    // check if current date is already in key
+    var dateSeen = grouped.hasOwnProperty(current.date);
+    // if this is the first time seeing this date, initialize an empty array to push to.
+    if (!dateSeen) {
+      grouped[current.date] = [];
+    }
 
-var makeScales = function makeScales(_ref3) {
-  var raw_data = _ref3.raw_data,
-      data = _ref3.data,
-      yMax = _ref3.yMax,
-      height = _ref3.height,
-      width = _ref3.width;
+    // send the whole object through to the outcome.
+    grouped[current.date].push(current);
 
-  var x = d3.scaleTime().domain([secondsToTime(0), secondsToTime(86400)]).range([0, width]);
-
-  var y = d3.scaleLinear().domain([0, yMax]).range([height, 0]);
-
-  // pixels back into seconds.
-  var toSeconds = d3.scaleLinear().domain([0, width]).range(d3.extent(raw_data, function (d) {
-    return +d.time;
-  }));
-
-  return { x: x, y: y, toSeconds: toSeconds };
-};
-
-var drawAxes = function drawAxes(_ref4) {
-  var svg = _ref4.svg,
-      scales = _ref4.scales,
-      height = _ref4.height,
-      font = _ref4.font;
-
-  // Add the X Axis
-  svg.append('g').attr('transform', 'translate(0,' + height + ')').call(d3.axisBottom(scales.x).tickFormat(timeFormat));
-
-  // Add the Y Axis
-  svg.append('g').call(d3.axisLeft(scales.y).ticks(5));
-
-  // givem a better font
-  svg.selectAll('.tick text').attr('font-family', font);
-};
-
-var makeLine = function makeLine(_ref5) {
-  var scales = _ref5.scales;
-  return d3.area().x(function (d) {
-    return scales.x(d.x);
-  }).y(function (d) {
-    return scales.y(d.y);
-  });
-};
-
-var makeArea = function makeArea(_ref6) {
-  var scales = _ref6.scales;
-  return d3.area().curve(d3.curveStepAfter).x(function (d) {
-    return scales.x(d.x);
-  }).y(function (d) {
-    return scales.y(0);
-  }).y1(function (d) {
-    return scales.y(d.y);
-  });
-};
-
-var writeDate = function writeDate(_ref7) {
-  var date = _ref7.date,
-      margin = _ref7.margin,
-      width = _ref7.width,
-      height = _ref7.height,
-      svg = _ref7.svg,
-      font = _ref7.font;
-  return svg.append('g').attr('class', 'current_date').attr('transform', 'translate(' + (width + margin.right / 3) + ', ' + height / 2 + ' ) rotate(90)').append('text').attr('text-anchor', 'middle').attr('font-family', font).attr('font-size', 20).text(moment(date).format('MMM  DD'));
+    return grouped;
+  }, {});
 };
 
 module.exports = {
   subsetData: subsetData,
-  appendSVG: appendSVG,
-  makeScales: makeScales,
-  drawAxes: drawAxes,
-  makeLine: makeLine,
-  makeArea: makeArea,
-  writeDate: writeDate,
-  secondsToTime: secondsToTime
+  groupByDate: groupByDate
 };
 
-},{"d3":3,"moment":4}],8:[function(require,module,exports){
+},{"./timeHelpers":11,"d3":3}],9:[function(require,module,exports){
 'use strict';
 
-var FitbitDay = require('./SingleDay');
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
 
-module.exports = FitbitDay;
+var SingleDay = require('./SingleDay');
 
-},{"./SingleDay":5}],9:[function(require,module,exports){
+var _require = require('./dataHelpers'),
+    groupByDate = _require.groupByDate;
+
+var _require2 = require('./chartHelpers'),
+    makeDivForDay = _require2.makeDivForDay,
+    dateToId = _require2.dateToId,
+    makeScales = _require2.makeScales;
+
+// Sets up all the individual day plots and
+// stores them in an object keyed by date.
+
+
+var drawAndStoreDays = function drawAndStoreDays(_ref) {
+  var groupedData = _ref.groupedData,
+      scales = _ref.scales,
+      margins = _ref.margins,
+      sel = _ref.sel;
+  return Object.keys(groupedData).reduce(function (datePlots, date) {
+    // set up a div to place this date in
+    makeDivForDay({ sel: sel, date: date });
+
+    // Assign a plot to the objects slot for the given date.
+    datePlots[date] = new SingleDay({
+      data: groupedData[date],
+      date: date,
+      scales: scales,
+      margins: margins,
+      domTarget: dateToId(date)
+    });
+    return datePlots;
+  }, {});
+};
+
+/** Main Class docs */
+
+var VisualizeDays =
+/** constructor docs */
+function VisualizeDays(_ref2) {
+  var data = _ref2.data,
+      domTarget = _ref2.domTarget,
+      _ref2$height = _ref2.height,
+      height = _ref2$height === undefined ? 200 : _ref2$height,
+      _ref2$width = _ref2.width,
+      width = _ref2$width === undefined ? 1000 : _ref2$width,
+      _ref2$dayHight = _ref2.dayHight,
+      dayHight = _ref2$dayHight === undefined ? 200 : _ref2$dayHight,
+      _ref2$dayWidth = _ref2.dayWidth,
+      dayWidth = _ref2$dayWidth === undefined ? 1000 : _ref2$dayWidth,
+      _ref2$dayMargins = _ref2.dayMargins,
+      dayMargins = _ref2$dayMargins === undefined ? { left: 40, right: 80, top: 60, bottom: 30 } : _ref2$dayMargins,
+      _ref2$yMax = _ref2.yMax,
+      yMax = _ref2$yMax === undefined ? 200 : _ref2$yMax;
+
+  _classCallCheck(this, VisualizeDays);
+
+  var groupedData = groupByDate(data);
+  this.sel = d3.select(domTarget);
+
+  // generate a common set of scales for all the days.
+  var scales = makeScales({
+    yMax: yMax,
+    height: dayHight,
+    width: dayWidth,
+    margins: dayMargins
+  });
+
+  // generate plots.
+  var dayPlots = drawAndStoreDays({
+    groupedData: groupedData,
+    scales: scales,
+    margins: dayMargins,
+    sel: this.sel
+  });
+};
+
+module.exports = VisualizeDays;
+
+},{"./SingleDay":5,"./chartHelpers":7,"./dataHelpers":8}],10:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () {
@@ -22124,7 +22245,7 @@ function _classCallCheck(instance, Constructor) {
 }
 
 // const d3 = require('d3');
-var _require = require('./helpers'),
+var _require = require('./timeHelpers'),
     secondsToTime = _require.secondsToTime;
 
 var _require2 = require('colorbrewer'),
@@ -22142,14 +22263,13 @@ var TagViz = function () {
         width = _ref.width,
         height = _ref.height,
         _ref$barThickness = _ref.barThickness,
-        barThickness = _ref$barThickness === undefined ? 20 : _ref$barThickness;
+        barThickness = _ref$barThickness === undefined ? 25 : _ref$barThickness;
 
     _classCallCheck(this, TagViz);
 
     this.tagG = svg.append('g').attr('class', 'tags_container');
 
     this.colorScale = colors[9];
-    console.log(this.colorScale);
     this.scales = scales;
     this.width = width;
     this.height = height;
@@ -22162,17 +22282,17 @@ var TagViz = function () {
     };
   }
 
+  /** Plots suppied tags on the visualization at the bottom of the chart as a bar.
+   * @param {object} tags - an array of objects for tags with elements
+   * [ {tag: <tagname>, start: <start in seconds>, end: <end in seconds>}...]
+   */
+
   _createClass(TagViz, [{
     key: 'draw',
-
-    /** Plots suppied tags on the visualization at the bottom of the chart as a bar.
-     * @param {object} tags - an array of objects for tags with elements
-     * [ {tag: <tagname>, start: <start in seconds>, end: <end in seconds>}...]
-     */
     value: function draw(tags) {
       var _this = this;
 
-      // find unique tags and then give them colors. 
+      // find unique tags and then give them colors.
       var tagColors = [].concat(_toConsumableArray(new Set(tags.map(function (tag) {
         return tag.tag;
       })))).reduce(function (colorObj, unique, i) {
@@ -22199,6 +22319,8 @@ var TagViz = function () {
         return tagColors[d.tag];
       }).attr('x', function (d) {
         return _this.secToPlot(d.start);
+      }).on('mouseover', function (d) {
+        console.log(d.tag);
       }).transition(this.trans).attr('width', function (d) {
         return _this.secToPlot(d.end) - _this.secToPlot(d.start);
       });
@@ -22208,9 +22330,28 @@ var TagViz = function () {
   return TagViz;
 }();
 
-;
-
 module.exports = TagViz;
 
-},{"./helpers":7,"colorbrewer":2}]},{},[8])(8)
+},{"./timeHelpers":11,"colorbrewer":2}],11:[function(require,module,exports){
+'use strict';
+
+var moment = require('moment');
+
+var secondsToTime = function secondsToTime(secs) {
+  return moment().startOf('day').seconds(secs);
+};
+
+var timeFormat = d3.timeFormat('%I %p');
+
+var toMonthDay = function toMonthDay(date) {
+  return moment(date).format('MMM  DD');
+};
+
+module.exports = {
+  secondsToTime: secondsToTime,
+  timeFormat: timeFormat,
+  toMonthDay: toMonthDay
+};
+
+},{"moment":4}]},{},[9])(9)
 });

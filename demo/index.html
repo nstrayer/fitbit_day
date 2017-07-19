@@ -16,6 +16,7 @@
     To preview the activity tagging interface simply drag a region on a chart. Eventually a tag input will be placed at the top, allowing the user to tag an activity over as many days as possible and then submit all at once. 
   </p>
 </div>
+<div id = "viz"> </div>
 <hr/>
 
 <style>
@@ -26,7 +27,6 @@
   body{
     font-family: avenir;
     margin: 15px;
-    overflow: hidden;
   }
 
   .axis{
@@ -36,36 +36,15 @@
 
 <script>
 
+  const width = window.innerWidth;
+
   d3.csv("fitbit_data.csv", (err, data) => {
 
-    const width = window.innerWidth;
-
-    const days = [
-      { date: "2017-06-26", divid: "zero" },
-      { date: "2017-06-27", divid: "one" },
-      { date: "2017-06-28", divid: "two" },
-      { date: "2017-06-29", divid: "three" },
-      { date: "2017-06-30", divid: "three" }
-    ];
-
-    days.forEach(
-      (day) => {
-        const dayData = data.filter(d => d.date === day.date);
-
-        d3.select('body')
-          .append("div")
-          .attr("id", day.divid)
-          .style("position", "relative");
-
-        const day_plot = new fitbit_day({
-          data: dayData,
-          domTarget: day.divid,
-          date: day.date,
-          width
-        })
-      }
-    );
-
+    const fitbitPlot = new fitbit_day({
+      data,
+      domTarget: '#viz',
+      width
+    });
   })
 
 </script>
