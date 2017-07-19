@@ -22128,7 +22128,7 @@ var _require = require('./helpers'),
     secondsToTime = _require.secondsToTime;
 
 var _require2 = require('colorbrewer'),
-    Paired = _require2.Paired;
+    colors = _require2.Set1;
 
 /** Is supplied with a svg object and some config options and then exposes 
  *  a way of plotting tagged events when supplied with an array of tags. 
@@ -22140,17 +22140,20 @@ var TagViz = function () {
     var svg = _ref.svg,
         scales = _ref.scales,
         width = _ref.width,
-        height = _ref.height;
+        height = _ref.height,
+        _ref$barThickness = _ref.barThickness,
+        barThickness = _ref$barThickness === undefined ? 20 : _ref$barThickness;
 
     _classCallCheck(this, TagViz);
 
     this.tagG = svg.append('g').attr('class', 'tags_container');
 
-    this.colorScale = Paired[12];
+    this.colorScale = colors[9];
     console.log(this.colorScale);
     this.scales = scales;
     this.width = width;
     this.height = height;
+    this.barThickness = barThickness;
     this.trans = d3.transition().duration(750);
 
     // this is an ugly concatnation of functions I use a bit.
@@ -22192,7 +22195,7 @@ var TagViz = function () {
       });
 
       // ENTER new tags
-      tagBars.enter().append('rect').attr('class', 'tag_bar').style('fill-opacity', '0.5').attr('y', 10).attr('height', 10).attr('width', 1e-6).style('fill', function (d) {
+      tagBars.enter().append('rect').attr('class', 'tag_bar').style('fill-opacity', '0.5').attr('y', this.height).attr('rx', this.barThickness * 0.5).attr('ry', this.barThickness * 0.5).attr('height', this.barThickness).attr('width', 1e-6).style('fill', function (d) {
         return tagColors[d.tag];
       }).attr('x', function (d) {
         return _this.secToPlot(d.start);

@@ -1,6 +1,6 @@
 // const d3 = require('d3');
 const {secondsToTime} = require('./helpers');
-const {Paired} = require('colorbrewer');
+const {Set1: colors} = require('colorbrewer');
 
 /** Is supplied with a svg object and some config options and then exposes 
  *  a way of plotting tagged events when supplied with an array of tags. 
@@ -12,16 +12,18 @@ class TagViz {
     scales,
     width,
     height,
+    barThickness = 20,
   }) {
     this.tagG = svg
       .append('g')
       .attr('class', 'tags_container');
 
-    this.colorScale = Paired[12];
-    console.log(this.colorScale)
+    this.colorScale = colors[9];
+    console.log(this.colorScale);
     this.scales = scales;
     this.width = width;
     this.height = height;
+    this.barThickness = barThickness;
     this.trans = d3.transition()
       .duration(750);
 
@@ -63,8 +65,10 @@ class TagViz {
       .append('rect')
       .attr('class', 'tag_bar')
       .style('fill-opacity', '0.5')
-      .attr('y', 10)
-      .attr('height', 10)
+      .attr('y', this.height)
+      .attr('rx', this.barThickness*0.5)
+      .attr('ry', this.barThickness*0.5)
+      .attr('height', this.barThickness)
       .attr('width', 1e-6)
       .style('fill', (d) => tagColors[d.tag])
       .attr('x', (d) => this.secToPlot(d.start) )
