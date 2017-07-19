@@ -53,7 +53,7 @@ class SingleDay {
     const area = makeArea({scales});
 
     // set up a tagging system for this day
-    const tagger = new Tagger({
+    this.tagger = new Tagger({
       svg,
       sel,
       date,
@@ -69,7 +69,6 @@ class SingleDay {
       height: vizHeight,
       width: vizWidth,
     });
-
 
     // plot the axes
     drawAxes({svg, scales, height: vizHeight, font});
@@ -94,10 +93,12 @@ class SingleDay {
   }
 
   /** Gets new tags and visualizes them */
-  updateTags(tags) {
+  updateTags({tags, lastTag}) {
     // filter tags to this day
     const todaysTags = tags.filter((tag) => tag.date === this.date);
     this.tagViz.draw(todaysTags);
+    console.log(this.tagger);
+    this.tagger.changePlaceholder(lastTag);
   }
   // method for drawing/redrawing (e.g. on resize)
 }
