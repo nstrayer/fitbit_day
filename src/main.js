@@ -48,7 +48,7 @@ const VisualizeDays = (config) => {
     data,
     domTarget,
     dayHeight = 200,
-    dayWidth = 1000,
+    dayWidth = window.innerWidth,
     dayMargins = {left: 40, right: 80, top: 60, bottom: 30},
     yMax = 200,
   } = config;
@@ -70,22 +70,6 @@ const VisualizeDays = (config) => {
     width: dayWidth,
     margins: dayMargins,
   });
-
-  // // generate plots.
-  // dayPlots = drawAndStoreDays({
-  //   groupedData,
-  //   scales,
-  //   margins: dayMargins,
-  //   sel,
-  //   onTag: (tag) =>
-  //     newTag({
-  //       tag,
-  //       tags,
-  //       tagColors,
-  //       colorScale,
-  //       dayPlots,
-  //     }),
-  // });
 
   // behavior once a tag is made. 
   const onTag = (tag) =>
@@ -112,15 +96,16 @@ const VisualizeDays = (config) => {
       })
   );
 
-  const resize = ({width, height}) => {
+  const resize = ({width, height = dayHeight}) => {
     // send command to resize each day
     dayPlots.forEach((day) => day.resize({width, height}));
   };
 
-  window.setTimeout(
-    () => resize({width: 800, height: 300}),
-    2000
-  );
+  window.addEventListener('resize', () => {
+    const newWidth = window.innerWidth;
+    console.log('new width is', newWidth);
+    resize({width: newWidth});
+  });
 
   return {
     resize,
