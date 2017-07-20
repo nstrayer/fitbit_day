@@ -1,11 +1,8 @@
 const d3 = require('d3');
 
-const {
-  secondsToTime,
-  timeFormat,
-  toMonthDay,
-} = require('./timeHelpers');
+const {secondsToTime, timeFormat, toMonthDay} = require('./timeHelpers');
 
+// Appends an svg to a div and provides a function for resizing it.
 const setUpSVG = (config) => {
   const {sel, width, height, margins} = config;
   // draw svg to screen
@@ -14,20 +11,19 @@ const setUpSVG = (config) => {
     .style('user-select', 'none')
     .style('cursor', 'default');
 
-  const svgG = svg
-    .append('g');
+  const svgG = svg.append('g');
 
   // function to change size of svg
   const resizeSvg = ({width, height, margins}) => {
-    svg
-      .attr('width', width)
-      .attr('height', height);
+    svg.attr('width', width).attr('height', height);
 
-    svgG
-      .attr('transform', 'translate(' + margins.left + ',' + margins.top + ')');
+    svgG.attr(
+      'transform',
+      'translate(' + margins.left + ',' + margins.top + ')'
+    );
   };
 
-  // initialize svg with passed sizes. 
+  // initialize svg with passed sizes.
   resizeSvg({width, height, margins});
 
   // returns svg selection and also the resize function.
@@ -37,40 +33,59 @@ const setUpSVG = (config) => {
   };
 };
 
+// returns a scale for x y and to convert to seconds from screen position
+// as well as returning a function for recomputing the size dependent components.
 const makeScales = ({yMax, height, width, margins}) => {
-  const chartWidth = width - margins.left - margins.right;
-  const chartHeight = height - margins.top - margins.bottom;
-  
-  const x = d3
-    .scaleTime()
-    .domain([secondsToTime(0), secondsToTime(86400)])
-    .range([0, chartWidth]);
+  // Set up static parts of the scales.
+  let x = d3.scaleTime().domain([secondsToTime(0), secondsToTime(86400)]);
+  let y = d3.scaleLinear().domain([0, yMax]);
+  let toSeconds = d3.scaleLinear().range([0, 86400]);
 
-  const y = d3.scaleLinear()
-    .domain([0, yMax])
-    .range([chartHeight, 0]);
+  const resizeScales = ({width, height, margins}) => {
+    const chartWidth = width - margins.left - margins.right;
+    const chartHeight = height - margins.top - margins.bottom;
 
-  // pixels back into seconds.
-  const toSeconds = d3
-    .scaleLinear()
-    .domain([0, chartWidth])
-    .range([0, 86400]);
+    // Based on the supplied sizes,
+    // assign the range to x and y and domain to seconds
+    x.range([0, chartWidth]);
+    y.range([chartHeight, 0]);
+    toSeconds.domain([0, chartWidth]);
+  };
 
-  return {x, y, toSeconds};
+  // Size scales for initial use.
+  resizeScales({width, height, margins});
+
+  return {
+    x,
+    y,
+    toSeconds,
+    resizeScales,
+  };
 };
 
 const drawAxes = ({svg, scales, height, font}) => {
   // Add the X Axis
-  svg
-    .append('g')
-    .attr('transform', 'translate(0,' + height + ')')
-    .call(d3.axisBottom(scales.x).tickFormat(timeFormat));
+  const xAxis = svg.append('g');
 
-  // Add the Y Axis
-  svg.append('g').call(d3.axisLeft(scales.y).ticks(5));
+  const yAxis = svg.append('g');
+
+  const update = ({scales, height}) => {
+    xAxis
+      .attr('transform', 'translate(0,' + height + ')')
+      .call(d3.axisBottom(scales.x).tickFormat(timeFormat));
+
+    yAxis.call(d3.axisLeft(scales.y).ticks(5));
+  };
+
+  // run update axis once to initialize:
+  update({scales, height});
 
   // givem a better font
   svg.selectAll('.tick text').attr('font-family', font);
+
+  return {
+    update,
+  };
 };
 
 const makeLine = ({scales}) =>
@@ -84,19 +99,28 @@ const makeArea = ({scales}) =>
     .y((d) => scales.y(0))
     .y1((d) => scales.y(d.y));
 
-const writeDate = ({date, margins, width, height, svg, font}) =>
-  svg
+const writeDate = ({date, margins, width, height, svg, font}) => {
+  const dateLabel = svg
     .append('g')
     .attr('class', 'current_date')
-    .attr(
-      'transform',
-      `translate(${width + margins.right / 3}, ${height / 2} ) rotate(90)`
-    )
     .append('text')
     .attr('text-anchor', 'middle')
     .attr('font-family', font)
     .attr('font-size', 20)
     .text(toMonthDay(date));
+
+  // moves the date upon resize.
+  const update = ({width, height}) =>
+    dateLabel.attr(
+      'transform',
+      `translate(${width + margins.right / 3}, ${height / 2} ) rotate(90)`
+    );
+
+  // initialize into correct position.
+  update({width, height});
+
+  return {update};
+};
 
 // The default -s in the dates cant be used as ids in html.
 const dateToId = (date) => `date_${date.replace(/-/g, '_')}`;

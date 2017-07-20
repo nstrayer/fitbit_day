@@ -48,7 +48,9 @@ const SingleDay = (config) => {
   const area = makeArea({scales});
   const hrG = svg.append('g').attr('class', 'hr_plot');
   const stepsG = svg.append('g').attr('class', 'steps_plot');
-
+  const axes = drawAxes({svg, scales, height: vizHeight, font});
+  const dateLabel = writeDate({date, margins, width: vizWidth, height: vizHeight, svg, font});
+  
   const drawHeartRate = () => {
     // grab the correct g element
     const hrLine = hrG.selectAll('path').data([hrData]);
@@ -105,9 +107,7 @@ const SingleDay = (config) => {
     height: vizHeight,
   });
 
-  // plot the axes
-  drawAxes({svg, scales, height: vizHeight, font});
-  writeDate({date, margins, width: vizWidth, height: vizHeight, svg, font});
+  
 
   drawViz();
 
