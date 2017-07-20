@@ -6,15 +6,36 @@ const {
   toMonthDay,
 } = require('./timeHelpers');
 
-const appendSVG = ({sel, height, width, margins}) =>
-  sel
+const setUpSVG = (config) => {
+  const {sel, width, height, margins} = config;
+  // draw svg to screen
+  const svg = sel
     .append('svg')
-    .attr('width', width)
-    .attr('height', height)
     .style('user-select', 'none')
-    .style('cursor', 'default')
-    .append('g')
-    .attr('transform', 'translate(' + margins.left + ',' + margins.top + ')');
+    .style('cursor', 'default');
+
+  const svgG = svg
+    .append('g');
+
+  // function to change size of svg
+  const resizeSvg = ({width, height, margins}) => {
+    svg
+      .attr('width', width)
+      .attr('height', height);
+
+    svgG
+      .attr('transform', 'translate(' + margins.left + ',' + margins.top + ')');
+  };
+
+  // initialize svg with passed sizes. 
+  resizeSvg({width, height, margins});
+
+  // returns svg selection and also the resize function.
+  return {
+    svg: svgG,
+    resizeSvg,
+  };
+};
 
 const makeScales = ({yMax, height, width, margins}) => {
   const chartWidth = width - margins.left - margins.right;
@@ -91,7 +112,7 @@ const makeDivForDay = ({sel, date}) => {
 };
 
 module.exports = {
-  appendSVG,
+  setUpSVG,
   makeScales,
   drawAxes,
   makeLine,

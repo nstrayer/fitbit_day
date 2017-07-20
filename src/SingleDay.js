@@ -1,7 +1,7 @@
 const {subsetData} = require('./dataHelpers');
 
 const {
-  appendSVG,
+  setUpSVG,
   drawAxes,
   makeLine,
   makeArea,
@@ -43,9 +43,49 @@ const SingleDay = (config) => {
   const stepsData = subsetData({data, type: 'steps'});
   const vizWidth = width - margins.left - margins.right;
   const vizHeight = height - margins.top - margins.bottom;
-  const svg = appendSVG({sel, height, width, margins});
+  const {svg, resizeSvg} = setUpSVG({sel, height, width, margins});
   const line = makeLine({scales});
   const area = makeArea({scales});
+  const hrG = svg.append('g').attr('class', 'hr_plot');
+  const stepsG = svg.append('g').attr('class', 'steps_plot');
+
+  const drawHeartRate = () => {
+    // grab the correct g element
+    const hrLine = hrG.selectAll('path').data([hrData]);
+
+    // Update existing line
+    hrLine.attr('d', line);
+
+    // ENTER new line
+    hrLine
+      .enter()
+      .append('path')
+      .attr('d', line)
+      .style('stroke', hrColor)
+      .style('stroke-width', lineThickness)
+      .style('fill', 'none');
+  };
+
+  const drawSteps = () => {
+    const stepLine = stepsG.selectAll('path').data([stepsData]);
+
+    // Update existing line
+    stepLine.attr('d', area);
+
+    // ENTER new line
+    stepLine
+      .enter()
+      .append('path')
+      .attr('d', area)
+      .style('fill', stepsColor)
+      .style('fill-opacity', 0.5);
+  };
+
+  /* Draw it all */
+  const drawViz = () => {
+    drawHeartRate();
+    drawSteps();
+  };
 
   // set up a tagging system for this day
   const tagger = Tagger({
@@ -69,22 +109,7 @@ const SingleDay = (config) => {
   drawAxes({svg, scales, height: vizHeight, font});
   writeDate({date, margins, width: vizWidth, height: vizHeight, svg, font});
 
-  // heart rate line
-  svg
-    .append('g')
-    .append('path')
-    .attr('d', line(hrData))
-    .style('stroke', hrColor)
-    .style('stroke-width', lineThickness)
-    .style('fill', 'none');
-
-  // steps line
-  svg
-    .append('g')
-    .append('path')
-    .attr('d', area(stepsData))
-    .style('fill', stepsColor)
-    .style('fill-opacity', 0.5);
+  drawViz();
 
   /** Gets new tags and visualizes them */
   const updateTags = ({tags, lastTag}) => {
