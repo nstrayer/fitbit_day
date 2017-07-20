@@ -69,8 +69,10 @@ const VisualizeDays = (config) => {
 
   // when user deletes a tag. 
   const onTagDelete = (tag) => {
-    console.log(tag);
-    console.table(tags);
+    // remove the deleted tag from array of tags
+    tags = tags.filter((t) => t !== tag);
+    // redraw tags
+    dayPlots.forEach((day) => day.updateTags({tags}));
   };
 
   // scan over dates and initialize a new visualization for each day.
