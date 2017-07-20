@@ -35,7 +35,6 @@ const setUpSVG = (config) => {
   };
 };
 
-
 // returns a scale for x y and to convert to seconds from screen position
 // as well as returning a function for recomputing the size dependent components.
 const makeScales = ({yMax, height, width, margins}) => {

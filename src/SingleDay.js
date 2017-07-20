@@ -49,6 +49,8 @@ const SingleDay = (config) => {
   const axes = drawAxes({svg, scales, height, margins, font});
   const dateLabel = writeDate({date, margins, width, height, svg, font});
 
+  let daysTags = [];
+
   const drawHeartRate = (line) => {
     // grab the correct g element
     const hrLine = hrG.selectAll('path').data([hrData]);
@@ -81,26 +83,6 @@ const SingleDay = (config) => {
       .style('fill-opacity', 0.5);
   };
 
- 
-  /* Draw heartrate and steps */
-  const drawViz = (scales) => {
-    drawHeartRate(makeLine(scales));
-    drawSteps(makeArea(scales));
-  };
-
-  const resize = ({width, height}) => {
-    // update svg
-    resizeSvg({width, height});
-    // update scales
-    scales.resizeScales({width, height});
-    // update axes
-    axes.update({scales, height});
-    // update date
-    dateLabel.update({width, height});
-    // update lines
-    drawViz(scales);
-  };
-
   // set up a tagging system for this day
   const tagger = Tagger({
     svg,
@@ -119,16 +101,32 @@ const SingleDay = (config) => {
     height: vizHeight,
   });
 
-
   /** Gets new tags and visualizes them */
   const updateTags = ({tags, lastTag}) => {
     // filter tags to this day
-    const todaysTags = tags.filter((tag) => tag.date === date);
-    tagViz.draw(todaysTags);
+    daysTags = tags.filter((tag) => tag.date === date);
+    tagViz.draw(daysTags);
     tagger.changePlaceHolder(lastTag);
   };
 
-  drawViz(scales);
+  const resize = ({width, height}) => {
+    // update svg
+    resizeSvg({width, height});
+    // update scales
+    scales.resizeScales({width, height});
+    // update axes
+    axes.update({scales, height});
+    // update date
+    dateLabel.update({width, height});
+    // update lines
+    drawHeartRate(makeLine(scales));
+    drawSteps(makeArea(scales));
+    // update tags
+    tagViz.draw(daysTags);
+  };
+
+  // Kick off viz.
+  resize({width, height});
 
   return {
     resize,

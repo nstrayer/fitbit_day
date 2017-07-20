@@ -24,9 +24,9 @@ const TagViz = (config) => {
 
     // UPDATE elements that were still there, not sure when this happens
     tagBars
-      .transition(trans)
       .style('fill', (d) => d.color)
-      .attr('x', (d) => secToPlot(d.start));
+      .attr('x', (d) => secToPlot(d.start))
+      .attr('width', (d) => secToPlot(d.end) - secToPlot(d.start));
 
     // ENTER new tags
     tagBars

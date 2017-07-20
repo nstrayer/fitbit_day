@@ -3,22 +3,6 @@ const {groupByDate} = require('./dataHelpers');
 const {makeDivForDay, makeScales} = require('./chartHelpers');
 const {Set1: colors} = require('colorbrewer');
 
-// Sets up all the individual day plots and
-// stores them in an array.
-// const drawAndStoreDays = ({groupedData, scales, margins, sel, onTag, dayWidth, dayHeight}) =>
-//   Object.keys(groupedData).map(
-//     (date) =>
-//       new SingleDay({
-//         data: groupedData[date],
-//         date,
-//         scales,
-//         margins,
-//         onTag,
-//         height: dayHeight,
-//         width: dayWidth,
-//         sel: makeDivForDay({sel, date}),
-//       })
-//   );
 
 // on reciept of a new tag adds it to global tags and sends new tag off to thier respective day's viz.
 const newTag = ({tag, tags, tagColors, colorScale, dayPlots}) => {
@@ -71,17 +55,17 @@ const VisualizeDays = (config) => {
     margins: dayMargins,
   });
 
-  // behavior once a tag is made. 
+  // behavior once a tag is made.
   const onTag = (tag) =>
-      newTag({
-        tag,
-        tags,
-        tagColors,
-        colorScale,
-        dayPlots,
-      });
-  
-  // scan over dates and initialize a new visualization for each day. 
+    newTag({
+      tag,
+      tags,
+      tagColors,
+      colorScale,
+      dayPlots,
+    });
+
+  // scan over dates and initialize a new visualization for each day.
   dayPlots = Object.keys(groupedData).map(
     (date) =>
       new SingleDay({
