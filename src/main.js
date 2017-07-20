@@ -67,6 +67,12 @@ const VisualizeDays = (config) => {
       dayPlots,
     });
 
+  // when user deletes a tag. 
+  const onTagDelete = (tag) => {
+    console.log(tag);
+    console.table(tags);
+  };
+
   // scan over dates and initialize a new visualization for each day.
   dayPlots = Object.keys(groupedData).map(
     (date) =>
@@ -79,6 +85,7 @@ const VisualizeDays = (config) => {
         width: dayWidth,
         sel: makeDivForDay({sel, date}),
         onTag,
+        onTagDelete,
       })
   );
 
@@ -87,11 +94,7 @@ const VisualizeDays = (config) => {
     dayPlots.forEach((day) => day.resize({width, height}));
   };
 
-  window.addEventListener('resize', () => {
-    const newWidth = window.innerWidth;
-    console.log('new width is', newWidth);
-    resize({width: newWidth});
-  });
+  window.addEventListener('resize', () => resize({width: window.innerWidth}) );
 
   return {
     resize,

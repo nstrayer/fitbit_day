@@ -6,7 +6,7 @@ const {secondsToTime} = require('./timeHelpers');
  */
 
 const TagViz = (config) => {
-  const {svg, scales, height, barThickness = 25, transitionSpeed = 400} = config;
+  const {svg, scales, height, barThickness = 25, transitionSpeed = 400, onTagDelete = (tag) => console.log(tag)} = config;
 
   const tagG = svg.append('g').attr('class', 'tags_container');
 
@@ -17,13 +17,15 @@ const TagViz = (config) => {
   // this is an ugly concatnation of functions I use a bit.
   const secToPlot = (secs) => scales.x(secondsToTime(secs));
 
-  const expandBar = (tagbar) => tagbar
+  const expandBar = (tag) => tag
+      .select('rect')
       .transition(trans('expanding'))
       .style('fill-opacity', 0.85)
       .attr('height', 3*barThickness)
       .attr('y', height - 2*barThickness);
 
-  const shrinkBar = (tagbar) => tagbar
+  const shrinkBar = (tag) => tag
+      .select('rect')
       .transition(trans('shrinking'))
       .style('fill-opacity', 0.5)
       .attr('height', barThickness)
@@ -31,38 +33,89 @@ const TagViz = (config) => {
       
   /** Behavior when individual tag is moused over */
   function onMouseover(selectedTag) {
-    console.log(this);
-    const tagBar = d3.select(this);
-    // const bar
+    const buttonRadius = barThickness * 0.5;
+    const tag = d3.select(this);
 
     // slide bar up to show info. 
-    expandBar(tagBar);
+    expandBar(tag);
 
-    console.log(selectedTag);
-  }
+    // append delete button
+    console.log(tag);
+    const deleteButton = tag
+      .append('g')
+      .attr('class', 'delete_button')
+      .attr(
+        'transform',
+        (d) => `translate(${buttonRadius},${height + buttonRadius})`
+      )
+      .on('click', onTagDelete );
+
+    const deleteCircle = deleteButton
+      .append('circle')
+      .attr('r', buttonRadius)
+      .attr('fill', 'grey');
+    
+    const deleteX = deleteButton
+      .append('text')
+      .attr('text-anchor', 'middle')
+      .style('stroke', '#f0f0f0')
+      .attr('dominant-baseline', 'central')
+      .text('X');
+
+    const deleteText = deleteButton
+      .append('text')
+      .attr('x', 1.5 * buttonRadius)
+      .attr('text-anchor', 'left')
+      .attr('dominant-baseline', 'central')
+      .text(`Delete tag`);
+
+    deleteButton
+      .transition(trans('expanding'))
+       .attr(
+        'transform',
+        (d) => `translate(${buttonRadius},${height - 2*barThickness + buttonRadius})`
+      );
+  };
+
   /** Behavior when individual tag is moused off */
   function onMouseout(selectedTag) {
     const tagBar = d3.select(this);
     // slide bar up back to normal size
     shrinkBar(tagBar);
+
+    tagBar.select('.delete_button').remove();
   }
 
   const draw = (tags) => {
     // JOIN data to our tags holder
-    const tagBars = tagG.selectAll('.tag_bar').data(tags, (d) => d.start);
+    const tagBars = tagG
+      .selectAll('.tag')
+      .data(tags, (d) => d.start);
 
     // EXIT old tags not present in new data.
-    tagBars.exit().transition(trans).style('fill-opacity', 1e-6).remove();
+    tagBars.exit().remove();
 
-    // UPDATE elements that were still there, not sure when this happens
+    // UPDATE elements that were still there, such as on resize. 
     tagBars
+      .attr(
+        'transform',
+        (d) => `translate(${secToPlot(d.start)},0)`
+      )
+      .select('rect')
       .style('fill', (d) => d.color)
-      .attr('x', (d) => secToPlot(d.start))
       .attr('width', (d) => secToPlot(d.end) - secToPlot(d.start));
 
     // ENTER new tags
     tagBars
       .enter()
+      .append('g')
+      .attr('class', 'tag')
+      .attr(
+        'transform',
+        (d) => `translate(${secToPlot(d.start)},0)`
+      )
+      .on('mouseenter', onMouseover)
+      .on('mouseleave', onMouseout)
       .append('rect')
       .attr('class', 'tag_bar')
       .style('fill-opacity', '0.5')
@@ -72,9 +125,6 @@ const TagViz = (config) => {
       .attr('height', barThickness)
       .attr('width', 1e-6)
       .style('fill', (d) => d.color)
-      .attr('x', (d) => secToPlot(d.start))
-      .on('mouseover', onMouseover)
-      .on('mouseout', onMouseout)
       .transition(trans)
       .attr('width', (d) => secToPlot(d.end) - secToPlot(d.start));
   };

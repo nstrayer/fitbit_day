@@ -31,6 +31,7 @@ const SingleDay = (config) => {
     margins,
     sel,
     onTag,
+    onTagDelete,
     height = 200,
     width = 1000,
     lineThickness = 1,
@@ -99,6 +100,7 @@ const SingleDay = (config) => {
     svg,
     scales,
     height: vizHeight,
+    onTagDelete,
   });
 
   /** Gets new tags and visualizes them */
