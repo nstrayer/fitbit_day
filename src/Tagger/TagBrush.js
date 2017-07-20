@@ -16,7 +16,6 @@ const TagBrush = (config) => {
   // Have we disabled this brush due to another brush being open?
   let {allowBrush = true} = config;
 
-
   /** What happens on brushing */
   function brushBehavior() {
     // if the brush selection is a region

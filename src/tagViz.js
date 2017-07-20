@@ -10,10 +10,42 @@ const TagViz = (config) => {
 
   const tagG = svg.append('g').attr('class', 'tags_container');
 
-  const trans = d3.transition().duration(750);
+  // giving the transition a name avoids conflicts
+  const trans = (name = 'sliding') => d3.transition(name)
+    .duration(750);
 
   // this is an ugly concatnation of functions I use a bit.
   const secToPlot = (secs) => scales.x(secondsToTime(secs));
+
+  const expandBar = (tagbar) => tagbar
+      .transition(trans('expanding'))
+      .style('fill-opacity', 0.85)
+      .attr('height', 3*barThickness)
+      .attr('y', height - 2*barThickness);
+
+  const shrinkBar = (tagbar) => tagbar
+      .transition(trans('shrinking'))
+      .style('fill-opacity', 0.5)
+      .attr('height', barThickness)
+      .attr('y', height);
+      
+  /** Behavior when individual tag is moused over */
+  function onMouseover(selectedTag) {
+    console.log(this);
+    const tagBar = d3.select(this);
+    // const bar
+
+    // slide bar up to show info. 
+    expandBar(tagBar);
+
+    console.log(selectedTag);
+  }
+  /** Behavior when individual tag is moused off */
+  function onMouseout(selectedTag) {
+    const tagBar = d3.select(this);
+    // slide bar up back to normal size
+    shrinkBar(tagBar);
+  }
 
   const draw = (tags) => {
     // JOIN data to our tags holder
@@ -41,9 +73,8 @@ const TagViz = (config) => {
       .attr('width', 1e-6)
       .style('fill', (d) => d.color)
       .attr('x', (d) => secToPlot(d.start))
-      .on('mouseover', (d) => {
-        console.log(d.tag);
-      })
+      .on('mouseover', onMouseover)
+      .on('mouseout', onMouseout)
       .transition(trans)
       .attr('width', (d) => secToPlot(d.end) - secToPlot(d.start));
   };

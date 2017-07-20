@@ -26,7 +26,9 @@ const newTag = ({tag, tags, tagColors, colorScale, dayPlots}) => {
   dayPlots.forEach((day) => day.updateTags({tags, lastTag: tagName}));
 };
 
-/** Main Func */
+/* Takes multiple day's worth of data and spins out a day viz for each along with
+*  some tagging logic to go with it.
+*/
 const VisualizeDays = (config) => {
   const {
     data,
