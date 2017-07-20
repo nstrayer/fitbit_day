@@ -1,8 +1,9 @@
 const TagBrush = require('./TagBrush');
 const TagInput = require('./TagInput');
 
-/** Sets up a given days tag interface. Wraps an input and a d3 brush behavior and spits out new tags. */
-const Tagger = ({
+/* Sets up a given days tag interface. Wraps an input and a d3 brush behavior and spits out new tags. */
+const Tagger = (config) => {
+  const {
     svg,
     sel,
     height,
@@ -10,21 +11,19 @@ const Tagger = ({
     scales,
     date,
     onTag,
-  }) => {
+  } = config;
+
   let allowBrush = true;
 
   // set up input
-    const tagInput = new TagInput({
-      svg,
+    const tagInput = TagInput({
       sel,
-      height,
-      width,
       date,
       scales,
       onTag,
     });
 
-    new TagBrush({
+    TagBrush({
       svg,
       width,
       height,

@@ -1,88 +1,75 @@
 const d3 = require('d3');
 const {getTimeOfDay} = require('../timeHelpers');
-const TagBrush = require('./TagBrush');
 
-/** Makes an invisible div to be used as the text input for tagging activities.
- * Also handles a good amount of the logic behind using this tagging interface. 
- */
-class TagInput {
-  /** Only requires the d3 selection of the div the visualization is in.*/
-  constructor({
-    svg,
+/* Main Func */
+const TagInput = (config) => {
+  // unpack the config.
+  const {
     sel,
-    height,
-    width,
     scales,
     date,
     onTag = (e) => console.log(e),
-  }) {
-    // Variable to store the time ranges for selections. In seconds into day.
-    this.sel = sel;
-    this.timeRange = [];
-    this.onTag = onTag;
-    this.scales = scales;
+  } = config;
+  // Variable to store the time ranges for selections. In seconds into day.
+  let timeRange = [];
 
-    // Main container div for all selection.
-    this.tagBody = sel
-      .append('div')
-      .style('position', 'absolute')
-      .style('text-align', 'left')
-      .style('padding', '8px')
-      .style('font', '14px optima')
-      .style('background', 'lightsteelblue')
-      .style('border', 0)
-      .style('display', 'none')
-      .style('border-radius', '8px')
-      .style('top', '28px');
+  // Main container div for all selection.
+  const tagBody = sel
+    .append('div')
+    .style('position', 'absolute')
+    .style('text-align', 'left')
+    .style('padding', '8px')
+    .style('font', '14px optima')
+    .style('background', 'lightsteelblue')
+    .style('border', 0)
+    .style('display', 'none')
+    .style('border-radius', '8px')
+    .style('top', '28px');
 
-    this.tagText = this.tagBody.append('span');
+  const tagText = tagBody.append('span');
 
-    // line break to give space
-    this.tagBody.append('br');
+  const tagForm = tagBody.append('form');
 
-    this.tagForm = this.tagBody.append('form');
+  // Wrap tagging in a form element to allow for enter to be used to submit a tag.
+  const tagInput = tagForm
+    .append('input')
+    .attr('type', 'text')
+    .attr('name', 'activity_tag')
+    .style('margin-top', '4px');
 
-    // Wrap tagging in a form element to allow for enter to be used to submit a tag.
-    this.tagInput = this.tagForm
-      .append('input')
-      .attr('type', 'text')
-      .attr('name', 'activity_tag')
-      .style('margin-top', '4px');
+  // add submit button
+  tagForm
+    .append('input')
+    .attr('type', 'submit')
+    .attr('value', 'tag')
+    .style('margin-left', '3px');
 
-    // submit button
-    this.tagForm
-      .append('input')
-      .attr('type', 'submit')
-      .attr('value', 'tag')
-      .style('margin-left', '3px');
+  // deal with form submit behavior
+  tagForm.on('submit', () => {
+    d3.event.preventDefault();
+    const tag = tagInput._groups[0][0].value;
 
-    // deal with form submit behavior
-    this.tagForm.on('submit', () => {
-      d3.event.preventDefault();
-      const tag = this.tagInput._groups[0][0].value;
-
-      // check to make sure the user put in some form of a tag.
-      const tagEmpty = tag === '';
-      if (tagEmpty) {
-        alert('Please enter a tag label.');
-        return;
-      }
-
-      // pass info to whatever tagging callback we have.
-      this.onTag({
-        tag,
-        date,
-        start: this.timeRange[0],
-        end: this.timeRange[1],
-      });
-      this.hide();
+    // check to make sure the user put in some form of a tag.
+    const tagEmpty = tag === '';
+    if (tagEmpty) {
+      alert('Please enter a tag label.');
+      return;
+    }
+    // pass info to whatever tagging callback we have.
+    onTag({
+      tag,
+      date,
+      start: timeRange[0],
+      end: timeRange[1],
     });
-  } // end constructor
 
-  /** fade tagger to invisible*/
-  hide() {
+    hide();
+  });
+
+  // hides the tagger.
+  const hide = () => {
     // hide the tagging container
-    this.tagBody
+    tagBody
       .transition()
       .duration(200)
       .style('opacity', 0)
@@ -91,7 +78,7 @@ class TagInput {
       });
 
     // also hide the brush rectangle d3 auto appends.
-    this.sel
+    sel
       .select('.selection')
       .transition()
       .duration(200)
@@ -99,34 +86,36 @@ class TagInput {
       .on('end', function() {
         d3.select(this).style('display', 'none').style('fill-opacity', 0.3);
       });
-  }
+  };
 
-  /** move tagger around. Transition property allows it to be animated or not.*/
-  move([start, end], transition = false) {
+  /* move tagger around. Transition property allows it to be animated or not.*/
+  const move = ([start, end], transition = false) => {
     // update the taggers timerange so tags have proper times
-    this.timeRange = [start, end];
-    
-    // find the x position in pixels from the seconds provided to move. 
-    const xPos = this.scales.toSeconds.invert(start);
+    timeRange = [start, end];
+
+    // find the x position in pixels from the seconds provided to move.
+    const xPos = scales.toSeconds.invert(start);
 
     // move the tag box to correct place
-    this.tagBody
+    tagBody
       .transition()
       .duration(transition ? 200 : 0)
       .style('opacity', 0.9)
       .style('display', 'inline')
       .style('left', `${xPos + 40}px`);
 
-    // update text of the time. 
-    this.tagText.text(
-      `Between ${getTimeOfDay(start)} and ${getTimeOfDay(end)}:`
-    );
-  }
-
-  /** Programatically change the input text. Helpful for when new tag is on a different day*/
-  changePlaceholder(tag) {
-    this.tagInput._groups[0][0].value = tag;
+    // update text of the time.
+    tagText.text(`Between ${getTimeOfDay(start)} and ${getTimeOfDay(end)}:`);
   };
-}
+
+  /* Programatically change the input text. Helpful for when new tag is on a different day*/
+  const changePlaceholder = (tag) => (tagInput._groups[0][0].value = tag);
+
+  return {
+    hide,
+    move,
+    changePlaceholder,
+  };
+};
 
 module.exports = TagInput;
