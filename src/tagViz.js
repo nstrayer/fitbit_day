@@ -1,18 +1,15 @@
 // const d3 = require('d3');
 const {secondsToTime} = require('./timeHelpers');
 
-
 /* Is supplied with a svg object and some config options and then exposes 
  *  a way of plotting tagged events when supplied with an array of tags. 
  */
 
 const TagViz = (config) => {
   const {svg, scales, height, barThickness = 25} = config;
-  
-  const tagG = svg
-    .append('g')
-    .attr('class', 'tags_container');
-  
+
+  const tagG = svg.append('g').attr('class', 'tags_container');
+
   const trans = d3.transition().duration(750);
 
   // this is an ugly concatnation of functions I use a bit.
@@ -20,16 +17,10 @@ const TagViz = (config) => {
 
   const draw = (tags) => {
     // JOIN data to our tags holder
-    const tagBars = tagG
-      .selectAll('.tag_bar')
-      .data(tags, (d) => d.start);
+    const tagBars = tagG.selectAll('.tag_bar').data(tags, (d) => d.start);
 
     // EXIT old tags not present in new data.
-    tagBars
-      .exit()
-      .transition(trans)
-      .style('fill-opacity', 1e-6)
-      .remove();
+    tagBars.exit().transition(trans).style('fill-opacity', 1e-6).remove();
 
     // UPDATE elements that were still there, not sure when this happens
     tagBars
