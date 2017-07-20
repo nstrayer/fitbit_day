@@ -5,18 +5,20 @@ const {Set1: colors} = require('colorbrewer');
 
 // Sets up all the individual day plots and
 // stores them in an array.
-const drawAndStoreDays = ({groupedData, scales, margins, sel, onTag}) =>
-  Object.keys(groupedData).map(
-    (date) =>
-      new SingleDay({
-        data: groupedData[date],
-        date,
-        scales,
-        margins,
-        onTag,
-        sel: makeDivForDay({sel, date}),
-      })
-  );
+// const drawAndStoreDays = ({groupedData, scales, margins, sel, onTag, dayWidth, dayHeight}) =>
+//   Object.keys(groupedData).map(
+//     (date) =>
+//       new SingleDay({
+//         data: groupedData[date],
+//         date,
+//         scales,
+//         margins,
+//         onTag,
+//         height: dayHeight,
+//         width: dayWidth,
+//         sel: makeDivForDay({sel, date}),
+//       })
+//   );
 
 // on reciept of a new tag adds it to global tags and sends new tag off to thier respective day's viz.
 const newTag = ({tag, tags, tagColors, colorScale, dayPlots}) => {
@@ -45,7 +47,7 @@ const VisualizeDays = (config) => {
   const {
     data,
     domTarget,
-    dayHight = 200,
+    dayHeight = 200,
     dayWidth = 1000,
     dayMargins = {left: 40, right: 80, top: 60, bottom: 30},
     yMax = 200,
@@ -64,26 +66,65 @@ const VisualizeDays = (config) => {
   // generate a common set of scales for all the days.
   const scales = makeScales({
     yMax,
-    height: dayHight,
+    height: dayHeight,
     width: dayWidth,
     margins: dayMargins,
   });
 
-  // generate plots.
-  dayPlots = drawAndStoreDays({
-    groupedData,
-    scales,
-    margins: dayMargins,
-    sel,
-    onTag: (tag) =>
+  // // generate plots.
+  // dayPlots = drawAndStoreDays({
+  //   groupedData,
+  //   scales,
+  //   margins: dayMargins,
+  //   sel,
+  //   onTag: (tag) =>
+  //     newTag({
+  //       tag,
+  //       tags,
+  //       tagColors,
+  //       colorScale,
+  //       dayPlots,
+  //     }),
+  // });
+
+  // behavior once a tag is made. 
+  const onTag = (tag) =>
       newTag({
         tag,
         tags,
         tagColors,
         colorScale,
         dayPlots,
-      }),
-  });
+      });
+  
+  // scan over dates and initialize a new visualization for each day. 
+  dayPlots = Object.keys(groupedData).map(
+    (date) =>
+      new SingleDay({
+        data: groupedData[date],
+        date,
+        scales,
+        margins: dayMargins,
+        height: dayHeight,
+        width: dayWidth,
+        sel: makeDivForDay({sel, date}),
+        onTag,
+      })
+  );
+
+  const resize = ({width, height}) => {
+    // send command to resize each day
+    dayPlots.forEach((day) => day.resize({width, height}));
+  };
+
+  window.setTimeout(
+    () => resize({width: 800, height: 300}),
+    2000
+  );
+
+  return {
+    resize,
+  };
 };
 
 module.exports = VisualizeDays;

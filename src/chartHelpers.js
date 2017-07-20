@@ -4,17 +4,19 @@ const {secondsToTime, timeFormat, toMonthDay} = require('./timeHelpers');
 
 // Appends an svg to a div and provides a function for resizing it.
 const setUpSVG = (config) => {
+  console.log('running setupSVG');
   const {sel, width, height, margins} = config;
+
   // draw svg to screen
   const svg = sel
     .append('svg')
     .style('user-select', 'none')
     .style('cursor', 'default');
 
-  const svgG = svg.append('g');
+  const svgG = svg.append('g').attr('class', 'viz_container');
 
   // function to change size of svg
-  const resizeSvg = ({width, height, margins}) => {
+  const resizeSvg = ({width, height}) => {
     svg.attr('width', width).attr('height', height);
 
     svgG.attr(
@@ -24,7 +26,7 @@ const setUpSVG = (config) => {
   };
 
   // initialize svg with passed sizes.
-  resizeSvg({width, height, margins});
+  resizeSvg({width, height});
 
   // returns svg selection and also the resize function.
   return {
@@ -32,6 +34,7 @@ const setUpSVG = (config) => {
     resizeSvg,
   };
 };
+
 
 // returns a scale for x y and to convert to seconds from screen position
 // as well as returning a function for recomputing the size dependent components.
@@ -41,7 +44,7 @@ const makeScales = ({yMax, height, width, margins}) => {
   let y = d3.scaleLinear().domain([0, yMax]);
   let toSeconds = d3.scaleLinear().range([0, 86400]);
 
-  const resizeScales = ({width, height, margins}) => {
+  const resizeScales = ({width, height}) => {
     const chartWidth = width - margins.left - margins.right;
     const chartHeight = height - margins.top - margins.bottom;
 
@@ -53,7 +56,7 @@ const makeScales = ({yMax, height, width, margins}) => {
   };
 
   // Size scales for initial use.
-  resizeScales({width, height, margins});
+  resizeScales({width, height});
 
   return {
     x,
@@ -63,15 +66,16 @@ const makeScales = ({yMax, height, width, margins}) => {
   };
 };
 
-const drawAxes = ({svg, scales, height, font}) => {
-  // Add the X Axis
-  const xAxis = svg.append('g');
-
-  const yAxis = svg.append('g');
+const drawAxes = ({svg, scales, height, margins, font}) => {
+  // Add the axes holders
+  const xAxis = svg.append('g').attr('class', 'x_axis');
+  const yAxis = svg.append('g').attr('class', 'y_axis');
 
   const update = ({scales, height}) => {
     xAxis
-      .attr('transform', 'translate(0,' + height + ')')
+      .attr('transform', 'translate(0,0)')
+      .attr('transform', 'translate(0,' +
+        (height - margins.top - margins.bottom) + ')')
       .call(d3.axisBottom(scales.x).tickFormat(timeFormat));
 
     yAxis.call(d3.axisLeft(scales.y).ticks(5));
@@ -88,10 +92,10 @@ const drawAxes = ({svg, scales, height, font}) => {
   };
 };
 
-const makeLine = ({scales}) =>
+const makeLine = (scales) =>
   d3.area().x((d) => scales.x(d.x)).y((d) => scales.y(d.y));
 
-const makeArea = ({scales}) =>
+const makeArea = (scales) =>
   d3
     .area()
     .curve(d3.curveStepAfter)
@@ -113,7 +117,8 @@ const writeDate = ({date, margins, width, height, svg, font}) => {
   const update = ({width, height}) =>
     dateLabel.attr(
       'transform',
-      `translate(${width + margins.right / 3}, ${height / 2} ) rotate(90)`
+      'translate(' + (width - margins.right*1.2) +
+        ',' + ((height - margins.top) / 2) + ') rotate(90)'
     );
 
   // initialize into correct position.

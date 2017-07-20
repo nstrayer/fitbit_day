@@ -44,14 +44,12 @@ const SingleDay = (config) => {
   const vizWidth = width - margins.left - margins.right;
   const vizHeight = height - margins.top - margins.bottom;
   const {svg, resizeSvg} = setUpSVG({sel, height, width, margins});
-  const line = makeLine({scales});
-  const area = makeArea({scales});
   const hrG = svg.append('g').attr('class', 'hr_plot');
   const stepsG = svg.append('g').attr('class', 'steps_plot');
-  const axes = drawAxes({svg, scales, height: vizHeight, font});
-  const dateLabel = writeDate({date, margins, width: vizWidth, height: vizHeight, svg, font});
-  
-  const drawHeartRate = () => {
+  const axes = drawAxes({svg, scales, height, margins, font});
+  const dateLabel = writeDate({date, margins, width, height, svg, font});
+
+  const drawHeartRate = (line) => {
     // grab the correct g element
     const hrLine = hrG.selectAll('path').data([hrData]);
 
@@ -68,7 +66,7 @@ const SingleDay = (config) => {
       .style('fill', 'none');
   };
 
-  const drawSteps = () => {
+  const drawSteps = (area) => {
     const stepLine = stepsG.selectAll('path').data([stepsData]);
 
     // Update existing line
@@ -83,10 +81,24 @@ const SingleDay = (config) => {
       .style('fill-opacity', 0.5);
   };
 
-  /* Draw it all */
-  const drawViz = () => {
-    drawHeartRate();
-    drawSteps();
+ 
+  /* Draw heartrate and steps */
+  const drawViz = (scales) => {
+    drawHeartRate(makeLine(scales));
+    drawSteps(makeArea(scales));
+  };
+
+  const resize = ({width, height}) => {
+    // update svg
+    resizeSvg({width, height});
+    // update scales
+    scales.resizeScales({width, height});
+    // update axes
+    axes.update({scales, height});
+    // update date
+    dateLabel.update({width, height});
+    // update lines
+    drawViz(scales);
   };
 
   // set up a tagging system for this day
@@ -107,9 +119,6 @@ const SingleDay = (config) => {
     height: vizHeight,
   });
 
-  
-
-  drawViz();
 
   /** Gets new tags and visualizes them */
   const updateTags = ({tags, lastTag}) => {
@@ -119,7 +128,12 @@ const SingleDay = (config) => {
     tagger.changePlaceHolder(lastTag);
   };
 
-  return {updateTags};
+  drawViz(scales);
+
+  return {
+    resize,
+    updateTags,
+  };
 };
 
 module.exports = SingleDay;
