@@ -1,40 +1,41 @@
 // const d3 = require('d3');
 const {secondsToTime} = require('./timeHelpers');
 
-/** Is supplied with a svg object and some config options and then exposes 
+
+/* Is supplied with a svg object and some config options and then exposes 
  *  a way of plotting tagged events when supplied with an array of tags. 
  */
-class TagViz {
-  /** constructor docs */
-  constructor({svg, scales, width, height, barThickness = 25}) {
-    this.tagG = svg.append('g').attr('class', 'tags_container');
 
-    this.scales = scales;
-    this.width = width;
-    this.height = height;
-    this.barThickness = barThickness;
-    this.trans = d3.transition().duration(750);
+const TagViz = (config) => {
+  const {svg, scales, height, barThickness = 25} = config;
+  
+  const tagG = svg
+    .append('g')
+    .attr('class', 'tags_container');
+  
+  const trans = d3.transition().duration(750);
 
-    // this is an ugly concatnation of functions I use a bit.
-    this.secToPlot = (secs) => scales.x(secondsToTime(secs));
-  }
+  // this is an ugly concatnation of functions I use a bit.
+  const secToPlot = (secs) => scales.x(secondsToTime(secs));
 
-  /** Plots suppied tags on the visualization at the bottom of the chart as a bar.
-   * @param {object} tags - an array of objects for tags with elements
-   * [ {tag: <tagname>, start: <start in seconds>, end: <end in seconds>}...]
-   */
-  draw(tags) {
+  const draw = (tags) => {
     // JOIN data to our tags holder
-    const tagBars = this.tagG.selectAll('.tag_bar').data(tags, (d) => d.start);
+    const tagBars = tagG
+      .selectAll('.tag_bar')
+      .data(tags, (d) => d.start);
 
     // EXIT old tags not present in new data.
-    tagBars.exit().transition(this.trans).style('fill-opacity', 1e-6).remove();
+    tagBars
+      .exit()
+      .transition(trans)
+      .style('fill-opacity', 1e-6)
+      .remove();
 
     // UPDATE elements that were still there, not sure when this happens
     tagBars
-      .transition(this.trans)
+      .transition(trans)
       .style('fill', (d) => d.color)
-      .attr('x', (d) => this.secToPlot(d.start));
+      .attr('x', (d) => secToPlot(d.start));
 
     // ENTER new tags
     tagBars
@@ -42,19 +43,21 @@ class TagViz {
       .append('rect')
       .attr('class', 'tag_bar')
       .style('fill-opacity', '0.5')
-      .attr('y', this.height)
-      .attr('rx', this.barThickness * 0.5)
-      .attr('ry', this.barThickness * 0.5)
-      .attr('height', this.barThickness)
+      .attr('y', height)
+      .attr('rx', barThickness * 0.5)
+      .attr('ry', barThickness * 0.5)
+      .attr('height', barThickness)
       .attr('width', 1e-6)
       .style('fill', (d) => d.color)
-      .attr('x', (d) => this.secToPlot(d.start))
+      .attr('x', (d) => secToPlot(d.start))
       .on('mouseover', (d) => {
         console.log(d.tag);
       })
-      .transition(this.trans)
-      .attr('width', (d) => this.secToPlot(d.end) - this.secToPlot(d.start));
-  }
-}
+      .transition(trans)
+      .attr('width', (d) => secToPlot(d.end) - secToPlot(d.start));
+  };
+
+  return {draw};
+};
 
 module.exports = TagViz;

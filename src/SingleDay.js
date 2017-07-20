@@ -63,11 +63,10 @@ class SingleDay {
       onTag,
     });
 
-    this.tagViz = new TagViz({
+    this.tagViz = TagViz({
       svg,
       scales,
       height: vizHeight,
-      width: vizWidth,
     });
 
     // plot the axes

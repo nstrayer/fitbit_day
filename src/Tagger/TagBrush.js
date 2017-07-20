@@ -8,13 +8,14 @@ const TagBrush = (config) => {
     svg,
     width,
     height,
-    allowBrush = true,
     scales,
     onBrush,
     onClickOff,
   } = config;
 
-  let brushAllowed = allowBrush;
+  // Have we disabled this brush due to another brush being open?
+  let {allowBrush = true} = config;
+
 
   /** What happens on brushing */
   function brushBehavior() {
@@ -39,10 +40,10 @@ const TagBrush = (config) => {
   svg.append('g').attr('class', 'brush').call(brush);
 
   // Switch on brush
-  const turnOn = () => (brushAllowed = true);
+  const turnOn = () => (allowBrush = true);
 
   // disable brush
-  const turnOff = () => (brushAllowed = false);
+  const turnOff = () => (allowBrush = false);
 
   return {
     turnOn,
