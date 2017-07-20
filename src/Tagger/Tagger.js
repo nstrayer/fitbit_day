@@ -2,9 +2,7 @@ const TagBrush = require('./TagBrush');
 const TagInput = require('./TagInput');
 
 /** Sets up a given days tag interface. Wraps an input and a d3 brush behavior and spits out new tags. */
-class Tagger {
-/** constructor docs */
-  constructor({
+const Tagger = ({
     svg,
     sel,
     height,
@@ -12,10 +10,10 @@ class Tagger {
     scales,
     date,
     onTag,
-  }) {
-    this.allowBrush = true;
-    
-    // set up input
+  }) => {
+  let allowBrush = true;
+
+  // set up input
     const tagInput = new TagInput({
       svg,
       sel,
@@ -26,32 +24,28 @@ class Tagger {
       onTag,
     });
 
-    // set up brush
-    const tagBrush = new TagBrush({
+    new TagBrush({
       svg,
       width,
       height,
-      allowBrush: this.allowBrush,
+      allowBrush,
       scales,
       onBrush: (range) => {
-        if (this.allowBrush) {
+        if (allowBrush) {
           tagInput.move(range);
         }
       },
       onClickOff: () => tagInput.hide(),
     });
 
-    this.changePlaceHolder = function(tag) {
-      return tagInput.changePlaceholder(tag);
+    const changePlaceHolder = (tag) => {
+      tagInput.changePlaceholder(tag);
     };
-  }
 
-  
-  // /** Updates this days placeholder text */
-  // changePlaceHolder(tag) {
-  //   console.log('running change placeholder at tagger level.');
-  //   // this.tagInput.changePlaceholder(tag);
-  // }
+    return {
+      changePlaceHolder,
+    };
 };
+
 
 module.exports = Tagger;

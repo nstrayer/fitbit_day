@@ -105,6 +105,7 @@ class TagInput {
   move([start, end], transition = false) {
     // update the taggers timerange so tags have proper times
     this.timeRange = [start, end];
+    
     // find the x position in pixels from the seconds provided to move. 
     const xPos = this.scales.toSeconds.invert(start);
 

@@ -6,9 +6,7 @@ const {getTimeOfDay} = require('../timeHelpers');
 /** Attaches to a single day and initializes a 2d brush on it.
  * Containers helpers to allow for ease of enabling and disabling the brushes
  */
-class TagBrush {
-  /** constructor docs */
-  constructor({
+const TagBrush = ({
     svg,
     width,
     height,
@@ -17,15 +15,11 @@ class TagBrush {
     scales,
     onBrush,
     onClickOff,
-  }) {
-    // defaults to allowing brushing on every visualization. 
-    this.allowBrush = allowBrush;
+  }) => {
+    let brushAllowed = allowBrush;
 
-    // set up brushing function. 
-    this.brush = d3
-      .brushX()
-      .extent([[0, 0], [width, height]])
-      .on('brush end', function() {
+    /** What happens on brushing */
+    function brushBehavior() {
         // if the brush selection is a region
         try {
           const s = d3.event.selection;
@@ -36,20 +30,26 @@ class TagBrush {
           // When the user has just clicked elsewhere.
           onClickOff();
         }
-      });
+    };
+    // set up brushing function. 
+    const brush = d3
+      .brushX()
+      .extent([[0, 0], [width, height]])
+      .on('brush end', brushBehavior);
 
-    svg.append('g').attr('class', 'brush').call(this.brush);
-  };
+    // append a container for the brush and call the brush function on it.
+    svg.append('g').attr('class', 'brush').call(brush);
 
-  /** Switch on brush */
-  turnOn() {
-    this.allowBrush = true;
-  };
+    // Switch on brush 
+    const turnOn = () => brushAllowed = true;
+  
+    // disable brush
+    const turnOff = () => brushAllowed = false;
 
-  /** disable brush */
-  turnOff() {
-    this.allowBrush = false;
-  }
+    return {
+      turnOn,
+      turnOff,
+    };
 };
 
 
