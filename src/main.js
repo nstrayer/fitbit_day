@@ -40,52 +40,50 @@ const newTag = ({tag, tags, tagColors, colorScale, dayPlots}) => {
   dayPlots.forEach((day) => day.updateTags({tags, lastTag: tagName}));
 };
 
-/** Main Class docs */
-class VisualizeDays {
-  /** constructor docs */
-  constructor({
+/** Main Func */
+const VisualizeDays = (config) => {
+  const {
     data,
     domTarget,
-    height = 200,
-    width = 1000,
     dayHight = 200,
     dayWidth = 1000,
     dayMargins = {left: 40, right: 80, top: 60, bottom: 30},
     yMax = 200,
-  }) {
-    const groupedData = groupByDate(data);
-    this.sel = d3.select(domTarget);
-    this.dayPlots;
+  } = config;
 
-    // stores all the users tags [{tag, date, start, end}, ...]
-    this.tags = [];
-    this.colorScale = colors[9];
-    this.tagColors = {};
+  const groupedData = groupByDate(data);
+  const sel = d3.select(domTarget);
+  const colorScale = colors[9];
 
-    // generate a common set of scales for all the days.
-    const scales = makeScales({
-      yMax,
-      height: dayHight,
-      width: dayWidth,
-      margins: dayMargins,
-    });
+  let dayPlots;
+  // stores all the users tags [{tag, date, start, end}, ...]
+  let tags = [];
+  // Object to relate a tag to a color for plotting.
+  let tagColors = {};
 
-    // generate plots.
-    this.dayPlots = drawAndStoreDays({
-      groupedData,
-      scales,
-      margins: dayMargins,
-      sel: this.sel,
-      onTag: (tag) =>
-        newTag({
-          tag,
-          tags: this.tags,
-          tagColors: this.tagColors,
-          colorScale: this.colorScale,
-          dayPlots: this.dayPlots,
-        }),
-    });
-  }
-}
+  // generate a common set of scales for all the days.
+  const scales = makeScales({
+    yMax,
+    height: dayHight,
+    width: dayWidth,
+    margins: dayMargins,
+  });
+
+  // generate plots.
+  dayPlots = drawAndStoreDays({
+    groupedData,
+    scales,
+    margins: dayMargins,
+    sel,
+    onTag: (tag) =>
+      newTag({
+        tag,
+        tags,
+        tagColors,
+        colorScale,
+        dayPlots,
+      }),
+  });
+};
 
 module.exports = VisualizeDays;
