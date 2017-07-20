@@ -97,8 +97,8 @@ class SingleDay {
     // filter tags to this day
     const todaysTags = tags.filter((tag) => tag.date === this.date);
     this.tagViz.draw(todaysTags);
-    console.log(this.tagger);
-    this.tagger.changePlaceholder(lastTag);
+    console.log(this.tagger.changePlaceHolder);
+    this.tagger.changePlaceHolder(lastTag);
   }
   // method for drawing/redrawing (e.g. on resize)
 }

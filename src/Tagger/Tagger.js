@@ -16,7 +16,7 @@ class Tagger {
     this.allowBrush = true;
     
     // set up input
-    this.tagInput = new TagInput({
+    const tagInput = new TagInput({
       svg,
       sel,
       height,
@@ -35,18 +35,23 @@ class Tagger {
       scales,
       onBrush: (range) => {
         if (this.allowBrush) {
-          this.tagInput.move(range);
+          tagInput.move(range);
         }
       },
-      onClickOff: () => this.tagInput.hide(),
+      onClickOff: () => tagInput.hide(),
     });
+
+    this.changePlaceHolder = function(tag) {
+      return tagInput.changePlaceholder(tag);
+    };
   }
 
-  /** Updates this days placeholder text */
-  changePlaceHolder(tag) {
-    console.log('running change placeholder at tagger level.');
-    // this.tagInput.changePlaceholder(tag);
-  }
+  
+  // /** Updates this days placeholder text */
+  // changePlaceHolder(tag) {
+  //   console.log('running change placeholder at tagger level.');
+  //   // this.tagInput.changePlaceholder(tag);
+  // }
 };
 
 module.exports = Tagger;
