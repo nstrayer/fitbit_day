@@ -6,13 +6,13 @@ const {secondsToTime} = require('./timeHelpers');
  */
 
 const TagViz = (config) => {
-  const {svg, scales, height, barThickness = 25} = config;
+  const {svg, scales, height, barThickness = 25, transitionSpeed = 400} = config;
 
   const tagG = svg.append('g').attr('class', 'tags_container');
 
   // giving the transition a name avoids conflicts
   const trans = (name = 'sliding') => d3.transition(name)
-    .duration(750);
+    .duration(transitionSpeed);
 
   // this is an ugly concatnation of functions I use a bit.
   const secToPlot = (secs) => scales.x(secondsToTime(secs));
