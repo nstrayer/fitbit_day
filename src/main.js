@@ -1,6 +1,6 @@
 const SingleDay = require('./SingleDay');
 const {groupByDate} = require('./dataHelpers');
-const {makeDivForDay, makeScales} = require('./chartHelpers');
+const {makeDiv, makeScales} = require('./chartHelpers');
 const {Set1: colors} = require('colorbrewer');
 
 
@@ -75,6 +75,9 @@ const VisualizeDays = (config) => {
     dayPlots.forEach((day) => day.updateTags({tags}));
   };
 
+  // append the tag legend
+  makeDiv({sel, id: 'tag_legend'});
+
   // scan over dates and initialize a new visualization for each day.
   dayPlots = Object.keys(groupedData).map(
     (date) =>
@@ -85,7 +88,7 @@ const VisualizeDays = (config) => {
         margins: dayMargins,
         height: dayHeight,
         width: dayWidth,
-        sel: makeDivForDay({sel, date}),
+        sel: makeDiv({sel, id: date}),
         onTag,
         onTagDelete,
       })

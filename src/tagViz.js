@@ -58,15 +58,6 @@ const TagViz = (config) => {
       .attr('dominant-baseline', 'central')
       .text('X');
 
-    // deleteButton
-    //   .append('text')
-    //   .attr('y', 0.3*barThickness)
-    //   .attr('x', 1.5 * buttonRadius)
-    //   .attr('text-anchor', 'left')
-    //   .attr('font-weight', 'bold')
-    //   .attr('dominant-baseline', 'central')
-    //   .text(`Delete`);
-
     deleteButton
       .transition(trans('expanding'))
       .attr('opacity', 1);
