@@ -4,7 +4,13 @@ const {getTimeOfDay} = require('../timeHelpers');
 /* Main Func */
 const TagInput = (config) => {
   // unpack the config.
-  const {sel, scales, date, onTag = (e) => console.log(e)} = config;
+  const {
+    sel,
+    scales,
+    date,
+    onTag,
+    fontFamily,
+  } = config;
 
   // Variable to store the time ranges for selections. In seconds into day.
   let timeRange = [];
@@ -15,7 +21,8 @@ const TagInput = (config) => {
     .style('position', 'absolute')
     .style('text-align', 'left')
     .style('padding', '8px')
-    .style('font', '14px optima')
+    .style('font-family', fontFamily)
+    .style('font-size', '14px')
     .style('background', 'lightsteelblue')
     .style('border', 0)
     .style('display', 'none')

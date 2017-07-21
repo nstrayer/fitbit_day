@@ -4,7 +4,6 @@ const {secondsToTime, timeFormat, toMonthDay} = require('./timeHelpers');
 
 // Appends an svg to a div and provides a function for resizing it.
 const setUpSVG = (config) => {
-  console.log('running setupSVG');
   const {sel, width, height, margins} = config;
 
   // draw svg to screen
@@ -65,7 +64,7 @@ const makeScales = ({yMax, height, width, margins}) => {
   };
 };
 
-const drawAxes = ({svg, scales, height, margins, font}) => {
+const drawAxes = ({svg, scales, height, margins, fontFamily}) => {
   // Add the axes holders
   const xAxis = svg.append('g').attr('class', 'x_axis');
   const yAxis = svg.append('g').attr('class', 'y_axis');
@@ -84,7 +83,7 @@ const drawAxes = ({svg, scales, height, margins, font}) => {
   update({scales, height});
 
   // givem a better font
-  svg.selectAll('.tick text').attr('font-family', font);
+  svg.selectAll('.tick text').attr('font-family', fontFamily);
 
   return {
     update,
@@ -102,13 +101,13 @@ const makeArea = (scales) =>
     .y((d) => scales.y(0))
     .y1((d) => scales.y(d.y));
 
-const writeDate = ({date, margins, width, height, svg, font}) => {
+const writeDate = ({date, margins, width, height, svg, fontFamily}) => {
   const dateLabel = svg
     .append('g')
     .attr('class', 'current_date')
     .append('text')
     .attr('text-anchor', 'middle')
-    .attr('font-family', font)
+    .attr('font-family', fontFamily)
     .attr('font-size', 20)
     .text(toMonthDay(date));
 

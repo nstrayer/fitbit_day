@@ -2,9 +2,10 @@ const {trans} = require('./chartHelpers');
 
 /** Creates a legend that updates with the currently present tags.*/
 const TagLegend = (config) => {
-  const {el, tagColors, tags, onHighlight} = config;
+  const {el, tagColors, tags, onHighlight, fontFamily} = config;
   // Header
   el
+    .style('font-family', fontFamily)
     .append('div')
     .attr('class', 'legend_header')
     .style('padding', '10px')

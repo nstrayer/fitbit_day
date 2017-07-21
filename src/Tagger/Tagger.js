@@ -11,6 +11,7 @@ const Tagger = (config) => {
     scales,
     date,
     onTag,
+    fontFamily,
   } = config;
 
   let allowBrush = true;
@@ -21,6 +22,7 @@ const Tagger = (config) => {
       date,
       scales,
       onTag,
+      fontFamily,
     });
 
     TagBrush({

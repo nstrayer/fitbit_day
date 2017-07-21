@@ -21,7 +21,7 @@ const TagViz = require('./TagViz');
  * @param {Number} [lineThickness = 1] - Plot line thickness. 
  * @param {String} [hrColor = '#8da0cb'] - Hex code for heartrate line color
  * @param {String} [stepsColor = '#66c2a5'] - Hex code for steps bar color.
- * @param {String} [font = 'avenir'] - Valid css name for a font for axes. 
+ * @param {String} [fontFamily = 'avenir'] - Valid css name for a font for axes. 
 */
 const SingleDay = (config) => {
   const {
@@ -32,12 +32,12 @@ const SingleDay = (config) => {
     sel,
     onTag,
     onTagDelete,
-    height = 200,
-    width = 1000,
+    height,
+    width,
     lineThickness = 1,
     hrColor = '#8da0cb',
     stepsColor = '#66c2a5',
-    font = 'avenir',
+    fontFamily = 'avenir',
   } = config;
 
   const hrData = subsetData({data, type: 'heart rate'});
@@ -47,8 +47,8 @@ const SingleDay = (config) => {
   const {svg, resizeSvg} = setUpSVG({sel, height, width, margins});
   const hrG = svg.append('g').attr('class', 'hr_plot');
   const stepsG = svg.append('g').attr('class', 'steps_plot');
-  const axes = drawAxes({svg, scales, height, margins, font});
-  const dateLabel = writeDate({date, margins, width, height, svg, font});
+  const axes = drawAxes({svg, scales, height, margins, fontFamily});
+  const dateLabel = writeDate({date, margins, width, height, svg, fontFamily});
 
   let daysTags = [];
 
@@ -93,6 +93,7 @@ const SingleDay = (config) => {
     height: vizHeight,
     scales,
     onTag,
+    fontFamily,
   });
 
   // Now the tag visualization

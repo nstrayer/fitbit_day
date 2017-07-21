@@ -39,6 +39,7 @@ const VisualizeDays = (config) => {
     dayHeight = 200,
     dayMargins = {left: 40, right: 80, top: 60, bottom: 30},
     yMax = 200,
+    fontFamily = 'times new roman',
   } = config;
   const getContainerWidth = () => sel._groups[0][0].offsetWidth;
   const groupedData = groupByDate(data);
@@ -64,6 +65,7 @@ const VisualizeDays = (config) => {
     el: makeDiv({sel, id: 'tag_legend'}),
     tagColors,
     tags,
+    fontFamily,
   });
 
   // behavior once a tag is made.
@@ -104,6 +106,7 @@ const VisualizeDays = (config) => {
         sel: makeDiv({sel, id: date}),
         onTag,
         onTagDelete,
+        fontFamily,
       })
   );
 
