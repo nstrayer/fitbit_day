@@ -1,11 +1,12 @@
 const SingleDay = require('./SingleDay');
+const TagLegend = require('./TagLegend');
 const {groupByDate} = require('./dataHelpers');
 const {makeDiv, makeScales} = require('./chartHelpers');
 const {Set1: colors} = require('colorbrewer');
 
 
 // on reciept of a new tag adds it to global tags and sends new tag off to thier respective day's viz.
-const newTag = ({tag, tags, tagColors, colorScale, dayPlots}) => {
+const newTag = ({tag, tags, tagColors, tagLegend, colorScale, dayPlots}) => {
   const tagName = tag.tag;
 
   // have we seen this tag before?
@@ -21,6 +22,9 @@ const newTag = ({tag, tags, tagColors, colorScale, dayPlots}) => {
 
   // push it to the big tags list.
   tags.push(tag);
+
+  // update the tag legend
+  tagLegend.update(tagColors, tags);
 
   // send all tags to each day's visualization
   dayPlots.forEach((day) => day.updateTags({tags, lastTag: tagName}));
@@ -57,11 +61,19 @@ const VisualizeDays = (config) => {
     margins: dayMargins,
   });
 
+  // append the tag legend
+  const tagLegend = TagLegend({
+    el: makeDiv({sel, id: 'tag_legend'}),
+    tagColors,
+    tags,
+  });
+
   // behavior once a tag is made.
-  const onTag = (tag) =>
+  const onTag = (tag) => 
     newTag({
       tag,
       tags,
+      tagLegend,
       tagColors,
       colorScale,
       dayPlots,
@@ -71,12 +83,15 @@ const VisualizeDays = (config) => {
   const onTagDelete = (tag) => {
     // remove the deleted tag from array of tags
     tags = tags.filter((t) => t !== tag);
+
+    // If there is no longer any of a given tag, take it out of the tag colors list.
+
+    // Update tag legend
+    tagLegend.update(tagColors, tags);
+
     // redraw tags
     dayPlots.forEach((day) => day.updateTags({tags}));
   };
-
-  // append the tag legend
-  makeDiv({sel, id: 'tag_legend'});
 
   // scan over dates and initialize a new visualization for each day.
   dayPlots = Object.keys(groupedData).map(

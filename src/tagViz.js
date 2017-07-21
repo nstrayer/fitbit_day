@@ -1,5 +1,5 @@
-// const d3 = require('d3');
 const {secondsToTime} = require('./timeHelpers');
+const {trans} = require('./chartHelpers');
 
 /* Is supplied with a svg object and some config options and then exposes 
  *  a way of plotting tagged events when supplied with an array of tags. 
@@ -9,10 +9,6 @@ const TagViz = (config) => {
   const {svg, scales, height, barThickness = 25, transitionSpeed = 400, onTagDelete = (tag) => console.log(tag)} = config;
 
   const tagG = svg.append('g').attr('class', 'tags_container');
-
-  // giving the transition a name avoids conflicts
-  const trans = (name = 'sliding') => d3.transition(name)
-    .duration(transitionSpeed);
 
   // this is an ugly concatnation of functions I use a bit.
   const secToPlot = (secs) => scales.x(secondsToTime(secs));
