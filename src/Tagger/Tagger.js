@@ -39,12 +39,8 @@ const Tagger = (config) => {
       onClickOff: () => tagInput.hide(),
     });
 
-    const changePlaceHolder = (tag) => {
-      tagInput.changePlaceholder(tag);
-    };
-
     return {
-      changePlaceHolder,
+      changePlaceHolder: tagInput.changePlaceholder,
     };
 };
 
