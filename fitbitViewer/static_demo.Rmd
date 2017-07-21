@@ -1,0 +1,29 @@
+---
+title: "Testing Fitbit HTML Widget"
+author: "Nick Strayer"
+date: "7/21/2017"
+output: 
+  html_document:
+    theme: flatly
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading Data
+
+In the shiny app this data will be pulled down from the api but for demo purposes I have exported a set of data for 8 days. 
+
+```{r}
+mydata <- read.csv('../docs/fitbit_data.csv')
+head(mydata)
+```
+
+## Plotting the tagging interface
+
+Now we can simply call the html widget from here. 
+
+```{r}
+fitbitViewer::fitbitViz(mydata)
+```

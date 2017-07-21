@@ -1,4 +1,324 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.fitbit_day = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.fitbit_viz = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+// This product includes color specifications and designs developed by Cynthia Brewer (http://colorbrewer.org/).
+// JavaScript specs as packaged in the D3 library (d3js.org). Please see license at http://colorbrewer.org/export/LICENSE.txt
+!function() {
+
+var colorbrewer = {YlGn: {
+3: ["#f7fcb9","#addd8e","#31a354"],
+4: ["#ffffcc","#c2e699","#78c679","#238443"],
+5: ["#ffffcc","#c2e699","#78c679","#31a354","#006837"],
+6: ["#ffffcc","#d9f0a3","#addd8e","#78c679","#31a354","#006837"],
+7: ["#ffffcc","#d9f0a3","#addd8e","#78c679","#41ab5d","#238443","#005a32"],
+8: ["#ffffe5","#f7fcb9","#d9f0a3","#addd8e","#78c679","#41ab5d","#238443","#005a32"],
+9: ["#ffffe5","#f7fcb9","#d9f0a3","#addd8e","#78c679","#41ab5d","#238443","#006837","#004529"]
+},YlGnBu: {
+3: ["#edf8b1","#7fcdbb","#2c7fb8"],
+4: ["#ffffcc","#a1dab4","#41b6c4","#225ea8"],
+5: ["#ffffcc","#a1dab4","#41b6c4","#2c7fb8","#253494"],
+6: ["#ffffcc","#c7e9b4","#7fcdbb","#41b6c4","#2c7fb8","#253494"],
+7: ["#ffffcc","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#0c2c84"],
+8: ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#0c2c84"],
+9: ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]
+},GnBu: {
+3: ["#e0f3db","#a8ddb5","#43a2ca"],
+4: ["#f0f9e8","#bae4bc","#7bccc4","#2b8cbe"],
+5: ["#f0f9e8","#bae4bc","#7bccc4","#43a2ca","#0868ac"],
+6: ["#f0f9e8","#ccebc5","#a8ddb5","#7bccc4","#43a2ca","#0868ac"],
+7: ["#f0f9e8","#ccebc5","#a8ddb5","#7bccc4","#4eb3d3","#2b8cbe","#08589e"],
+8: ["#f7fcf0","#e0f3db","#ccebc5","#a8ddb5","#7bccc4","#4eb3d3","#2b8cbe","#08589e"],
+9: ["#f7fcf0","#e0f3db","#ccebc5","#a8ddb5","#7bccc4","#4eb3d3","#2b8cbe","#0868ac","#084081"]
+},BuGn: {
+3: ["#e5f5f9","#99d8c9","#2ca25f"],
+4: ["#edf8fb","#b2e2e2","#66c2a4","#238b45"],
+5: ["#edf8fb","#b2e2e2","#66c2a4","#2ca25f","#006d2c"],
+6: ["#edf8fb","#ccece6","#99d8c9","#66c2a4","#2ca25f","#006d2c"],
+7: ["#edf8fb","#ccece6","#99d8c9","#66c2a4","#41ae76","#238b45","#005824"],
+8: ["#f7fcfd","#e5f5f9","#ccece6","#99d8c9","#66c2a4","#41ae76","#238b45","#005824"],
+9: ["#f7fcfd","#e5f5f9","#ccece6","#99d8c9","#66c2a4","#41ae76","#238b45","#006d2c","#00441b"]
+},PuBuGn: {
+3: ["#ece2f0","#a6bddb","#1c9099"],
+4: ["#f6eff7","#bdc9e1","#67a9cf","#02818a"],
+5: ["#f6eff7","#bdc9e1","#67a9cf","#1c9099","#016c59"],
+6: ["#f6eff7","#d0d1e6","#a6bddb","#67a9cf","#1c9099","#016c59"],
+7: ["#f6eff7","#d0d1e6","#a6bddb","#67a9cf","#3690c0","#02818a","#016450"],
+8: ["#fff7fb","#ece2f0","#d0d1e6","#a6bddb","#67a9cf","#3690c0","#02818a","#016450"],
+9: ["#fff7fb","#ece2f0","#d0d1e6","#a6bddb","#67a9cf","#3690c0","#02818a","#016c59","#014636"]
+},PuBu: {
+3: ["#ece7f2","#a6bddb","#2b8cbe"],
+4: ["#f1eef6","#bdc9e1","#74a9cf","#0570b0"],
+5: ["#f1eef6","#bdc9e1","#74a9cf","#2b8cbe","#045a8d"],
+6: ["#f1eef6","#d0d1e6","#a6bddb","#74a9cf","#2b8cbe","#045a8d"],
+7: ["#f1eef6","#d0d1e6","#a6bddb","#74a9cf","#3690c0","#0570b0","#034e7b"],
+8: ["#fff7fb","#ece7f2","#d0d1e6","#a6bddb","#74a9cf","#3690c0","#0570b0","#034e7b"],
+9: ["#fff7fb","#ece7f2","#d0d1e6","#a6bddb","#74a9cf","#3690c0","#0570b0","#045a8d","#023858"]
+},BuPu: {
+3: ["#e0ecf4","#9ebcda","#8856a7"],
+4: ["#edf8fb","#b3cde3","#8c96c6","#88419d"],
+5: ["#edf8fb","#b3cde3","#8c96c6","#8856a7","#810f7c"],
+6: ["#edf8fb","#bfd3e6","#9ebcda","#8c96c6","#8856a7","#810f7c"],
+7: ["#edf8fb","#bfd3e6","#9ebcda","#8c96c6","#8c6bb1","#88419d","#6e016b"],
+8: ["#f7fcfd","#e0ecf4","#bfd3e6","#9ebcda","#8c96c6","#8c6bb1","#88419d","#6e016b"],
+9: ["#f7fcfd","#e0ecf4","#bfd3e6","#9ebcda","#8c96c6","#8c6bb1","#88419d","#810f7c","#4d004b"]
+},RdPu: {
+3: ["#fde0dd","#fa9fb5","#c51b8a"],
+4: ["#feebe2","#fbb4b9","#f768a1","#ae017e"],
+5: ["#feebe2","#fbb4b9","#f768a1","#c51b8a","#7a0177"],
+6: ["#feebe2","#fcc5c0","#fa9fb5","#f768a1","#c51b8a","#7a0177"],
+7: ["#feebe2","#fcc5c0","#fa9fb5","#f768a1","#dd3497","#ae017e","#7a0177"],
+8: ["#fff7f3","#fde0dd","#fcc5c0","#fa9fb5","#f768a1","#dd3497","#ae017e","#7a0177"],
+9: ["#fff7f3","#fde0dd","#fcc5c0","#fa9fb5","#f768a1","#dd3497","#ae017e","#7a0177","#49006a"]
+},PuRd: {
+3: ["#e7e1ef","#c994c7","#dd1c77"],
+4: ["#f1eef6","#d7b5d8","#df65b0","#ce1256"],
+5: ["#f1eef6","#d7b5d8","#df65b0","#dd1c77","#980043"],
+6: ["#f1eef6","#d4b9da","#c994c7","#df65b0","#dd1c77","#980043"],
+7: ["#f1eef6","#d4b9da","#c994c7","#df65b0","#e7298a","#ce1256","#91003f"],
+8: ["#f7f4f9","#e7e1ef","#d4b9da","#c994c7","#df65b0","#e7298a","#ce1256","#91003f"],
+9: ["#f7f4f9","#e7e1ef","#d4b9da","#c994c7","#df65b0","#e7298a","#ce1256","#980043","#67001f"]
+},OrRd: {
+3: ["#fee8c8","#fdbb84","#e34a33"],
+4: ["#fef0d9","#fdcc8a","#fc8d59","#d7301f"],
+5: ["#fef0d9","#fdcc8a","#fc8d59","#e34a33","#b30000"],
+6: ["#fef0d9","#fdd49e","#fdbb84","#fc8d59","#e34a33","#b30000"],
+7: ["#fef0d9","#fdd49e","#fdbb84","#fc8d59","#ef6548","#d7301f","#990000"],
+8: ["#fff7ec","#fee8c8","#fdd49e","#fdbb84","#fc8d59","#ef6548","#d7301f","#990000"],
+9: ["#fff7ec","#fee8c8","#fdd49e","#fdbb84","#fc8d59","#ef6548","#d7301f","#b30000","#7f0000"]
+},YlOrRd: {
+3: ["#ffeda0","#feb24c","#f03b20"],
+4: ["#ffffb2","#fecc5c","#fd8d3c","#e31a1c"],
+5: ["#ffffb2","#fecc5c","#fd8d3c","#f03b20","#bd0026"],
+6: ["#ffffb2","#fed976","#feb24c","#fd8d3c","#f03b20","#bd0026"],
+7: ["#ffffb2","#fed976","#feb24c","#fd8d3c","#fc4e2a","#e31a1c","#b10026"],
+8: ["#ffffcc","#ffeda0","#fed976","#feb24c","#fd8d3c","#fc4e2a","#e31a1c","#b10026"],
+9: ["#ffffcc","#ffeda0","#fed976","#feb24c","#fd8d3c","#fc4e2a","#e31a1c","#bd0026","#800026"]
+},YlOrBr: {
+3: ["#fff7bc","#fec44f","#d95f0e"],
+4: ["#ffffd4","#fed98e","#fe9929","#cc4c02"],
+5: ["#ffffd4","#fed98e","#fe9929","#d95f0e","#993404"],
+6: ["#ffffd4","#fee391","#fec44f","#fe9929","#d95f0e","#993404"],
+7: ["#ffffd4","#fee391","#fec44f","#fe9929","#ec7014","#cc4c02","#8c2d04"],
+8: ["#ffffe5","#fff7bc","#fee391","#fec44f","#fe9929","#ec7014","#cc4c02","#8c2d04"],
+9: ["#ffffe5","#fff7bc","#fee391","#fec44f","#fe9929","#ec7014","#cc4c02","#993404","#662506"]
+},Purples: {
+3: ["#efedf5","#bcbddc","#756bb1"],
+4: ["#f2f0f7","#cbc9e2","#9e9ac8","#6a51a3"],
+5: ["#f2f0f7","#cbc9e2","#9e9ac8","#756bb1","#54278f"],
+6: ["#f2f0f7","#dadaeb","#bcbddc","#9e9ac8","#756bb1","#54278f"],
+7: ["#f2f0f7","#dadaeb","#bcbddc","#9e9ac8","#807dba","#6a51a3","#4a1486"],
+8: ["#fcfbfd","#efedf5","#dadaeb","#bcbddc","#9e9ac8","#807dba","#6a51a3","#4a1486"],
+9: ["#fcfbfd","#efedf5","#dadaeb","#bcbddc","#9e9ac8","#807dba","#6a51a3","#54278f","#3f007d"]
+},Blues: {
+3: ["#deebf7","#9ecae1","#3182bd"],
+4: ["#eff3ff","#bdd7e7","#6baed6","#2171b5"],
+5: ["#eff3ff","#bdd7e7","#6baed6","#3182bd","#08519c"],
+6: ["#eff3ff","#c6dbef","#9ecae1","#6baed6","#3182bd","#08519c"],
+7: ["#eff3ff","#c6dbef","#9ecae1","#6baed6","#4292c6","#2171b5","#084594"],
+8: ["#f7fbff","#deebf7","#c6dbef","#9ecae1","#6baed6","#4292c6","#2171b5","#084594"],
+9: ["#f7fbff","#deebf7","#c6dbef","#9ecae1","#6baed6","#4292c6","#2171b5","#08519c","#08306b"]
+},Greens: {
+3: ["#e5f5e0","#a1d99b","#31a354"],
+4: ["#edf8e9","#bae4b3","#74c476","#238b45"],
+5: ["#edf8e9","#bae4b3","#74c476","#31a354","#006d2c"],
+6: ["#edf8e9","#c7e9c0","#a1d99b","#74c476","#31a354","#006d2c"],
+7: ["#edf8e9","#c7e9c0","#a1d99b","#74c476","#41ab5d","#238b45","#005a32"],
+8: ["#f7fcf5","#e5f5e0","#c7e9c0","#a1d99b","#74c476","#41ab5d","#238b45","#005a32"],
+9: ["#f7fcf5","#e5f5e0","#c7e9c0","#a1d99b","#74c476","#41ab5d","#238b45","#006d2c","#00441b"]
+},Oranges: {
+3: ["#fee6ce","#fdae6b","#e6550d"],
+4: ["#feedde","#fdbe85","#fd8d3c","#d94701"],
+5: ["#feedde","#fdbe85","#fd8d3c","#e6550d","#a63603"],
+6: ["#feedde","#fdd0a2","#fdae6b","#fd8d3c","#e6550d","#a63603"],
+7: ["#feedde","#fdd0a2","#fdae6b","#fd8d3c","#f16913","#d94801","#8c2d04"],
+8: ["#fff5eb","#fee6ce","#fdd0a2","#fdae6b","#fd8d3c","#f16913","#d94801","#8c2d04"],
+9: ["#fff5eb","#fee6ce","#fdd0a2","#fdae6b","#fd8d3c","#f16913","#d94801","#a63603","#7f2704"]
+},Reds: {
+3: ["#fee0d2","#fc9272","#de2d26"],
+4: ["#fee5d9","#fcae91","#fb6a4a","#cb181d"],
+5: ["#fee5d9","#fcae91","#fb6a4a","#de2d26","#a50f15"],
+6: ["#fee5d9","#fcbba1","#fc9272","#fb6a4a","#de2d26","#a50f15"],
+7: ["#fee5d9","#fcbba1","#fc9272","#fb6a4a","#ef3b2c","#cb181d","#99000d"],
+8: ["#fff5f0","#fee0d2","#fcbba1","#fc9272","#fb6a4a","#ef3b2c","#cb181d","#99000d"],
+9: ["#fff5f0","#fee0d2","#fcbba1","#fc9272","#fb6a4a","#ef3b2c","#cb181d","#a50f15","#67000d"]
+},Greys: {
+3: ["#f0f0f0","#bdbdbd","#636363"],
+4: ["#f7f7f7","#cccccc","#969696","#525252"],
+5: ["#f7f7f7","#cccccc","#969696","#636363","#252525"],
+6: ["#f7f7f7","#d9d9d9","#bdbdbd","#969696","#636363","#252525"],
+7: ["#f7f7f7","#d9d9d9","#bdbdbd","#969696","#737373","#525252","#252525"],
+8: ["#ffffff","#f0f0f0","#d9d9d9","#bdbdbd","#969696","#737373","#525252","#252525"],
+9: ["#ffffff","#f0f0f0","#d9d9d9","#bdbdbd","#969696","#737373","#525252","#252525","#000000"]
+},PuOr: {
+3: ["#f1a340","#f7f7f7","#998ec3"],
+4: ["#e66101","#fdb863","#b2abd2","#5e3c99"],
+5: ["#e66101","#fdb863","#f7f7f7","#b2abd2","#5e3c99"],
+6: ["#b35806","#f1a340","#fee0b6","#d8daeb","#998ec3","#542788"],
+7: ["#b35806","#f1a340","#fee0b6","#f7f7f7","#d8daeb","#998ec3","#542788"],
+8: ["#b35806","#e08214","#fdb863","#fee0b6","#d8daeb","#b2abd2","#8073ac","#542788"],
+9: ["#b35806","#e08214","#fdb863","#fee0b6","#f7f7f7","#d8daeb","#b2abd2","#8073ac","#542788"],
+10: ["#7f3b08","#b35806","#e08214","#fdb863","#fee0b6","#d8daeb","#b2abd2","#8073ac","#542788","#2d004b"],
+11: ["#7f3b08","#b35806","#e08214","#fdb863","#fee0b6","#f7f7f7","#d8daeb","#b2abd2","#8073ac","#542788","#2d004b"]
+},BrBG: {
+3: ["#d8b365","#f5f5f5","#5ab4ac"],
+4: ["#a6611a","#dfc27d","#80cdc1","#018571"],
+5: ["#a6611a","#dfc27d","#f5f5f5","#80cdc1","#018571"],
+6: ["#8c510a","#d8b365","#f6e8c3","#c7eae5","#5ab4ac","#01665e"],
+7: ["#8c510a","#d8b365","#f6e8c3","#f5f5f5","#c7eae5","#5ab4ac","#01665e"],
+8: ["#8c510a","#bf812d","#dfc27d","#f6e8c3","#c7eae5","#80cdc1","#35978f","#01665e"],
+9: ["#8c510a","#bf812d","#dfc27d","#f6e8c3","#f5f5f5","#c7eae5","#80cdc1","#35978f","#01665e"],
+10: ["#543005","#8c510a","#bf812d","#dfc27d","#f6e8c3","#c7eae5","#80cdc1","#35978f","#01665e","#003c30"],
+11: ["#543005","#8c510a","#bf812d","#dfc27d","#f6e8c3","#f5f5f5","#c7eae5","#80cdc1","#35978f","#01665e","#003c30"]
+},PRGn: {
+3: ["#af8dc3","#f7f7f7","#7fbf7b"],
+4: ["#7b3294","#c2a5cf","#a6dba0","#008837"],
+5: ["#7b3294","#c2a5cf","#f7f7f7","#a6dba0","#008837"],
+6: ["#762a83","#af8dc3","#e7d4e8","#d9f0d3","#7fbf7b","#1b7837"],
+7: ["#762a83","#af8dc3","#e7d4e8","#f7f7f7","#d9f0d3","#7fbf7b","#1b7837"],
+8: ["#762a83","#9970ab","#c2a5cf","#e7d4e8","#d9f0d3","#a6dba0","#5aae61","#1b7837"],
+9: ["#762a83","#9970ab","#c2a5cf","#e7d4e8","#f7f7f7","#d9f0d3","#a6dba0","#5aae61","#1b7837"],
+10: ["#40004b","#762a83","#9970ab","#c2a5cf","#e7d4e8","#d9f0d3","#a6dba0","#5aae61","#1b7837","#00441b"],
+11: ["#40004b","#762a83","#9970ab","#c2a5cf","#e7d4e8","#f7f7f7","#d9f0d3","#a6dba0","#5aae61","#1b7837","#00441b"]
+},PiYG: {
+3: ["#e9a3c9","#f7f7f7","#a1d76a"],
+4: ["#d01c8b","#f1b6da","#b8e186","#4dac26"],
+5: ["#d01c8b","#f1b6da","#f7f7f7","#b8e186","#4dac26"],
+6: ["#c51b7d","#e9a3c9","#fde0ef","#e6f5d0","#a1d76a","#4d9221"],
+7: ["#c51b7d","#e9a3c9","#fde0ef","#f7f7f7","#e6f5d0","#a1d76a","#4d9221"],
+8: ["#c51b7d","#de77ae","#f1b6da","#fde0ef","#e6f5d0","#b8e186","#7fbc41","#4d9221"],
+9: ["#c51b7d","#de77ae","#f1b6da","#fde0ef","#f7f7f7","#e6f5d0","#b8e186","#7fbc41","#4d9221"],
+10: ["#8e0152","#c51b7d","#de77ae","#f1b6da","#fde0ef","#e6f5d0","#b8e186","#7fbc41","#4d9221","#276419"],
+11: ["#8e0152","#c51b7d","#de77ae","#f1b6da","#fde0ef","#f7f7f7","#e6f5d0","#b8e186","#7fbc41","#4d9221","#276419"]
+},RdBu: {
+3: ["#ef8a62","#f7f7f7","#67a9cf"],
+4: ["#ca0020","#f4a582","#92c5de","#0571b0"],
+5: ["#ca0020","#f4a582","#f7f7f7","#92c5de","#0571b0"],
+6: ["#b2182b","#ef8a62","#fddbc7","#d1e5f0","#67a9cf","#2166ac"],
+7: ["#b2182b","#ef8a62","#fddbc7","#f7f7f7","#d1e5f0","#67a9cf","#2166ac"],
+8: ["#b2182b","#d6604d","#f4a582","#fddbc7","#d1e5f0","#92c5de","#4393c3","#2166ac"],
+9: ["#b2182b","#d6604d","#f4a582","#fddbc7","#f7f7f7","#d1e5f0","#92c5de","#4393c3","#2166ac"],
+10: ["#67001f","#b2182b","#d6604d","#f4a582","#fddbc7","#d1e5f0","#92c5de","#4393c3","#2166ac","#053061"],
+11: ["#67001f","#b2182b","#d6604d","#f4a582","#fddbc7","#f7f7f7","#d1e5f0","#92c5de","#4393c3","#2166ac","#053061"]
+},RdGy: {
+3: ["#ef8a62","#ffffff","#999999"],
+4: ["#ca0020","#f4a582","#bababa","#404040"],
+5: ["#ca0020","#f4a582","#ffffff","#bababa","#404040"],
+6: ["#b2182b","#ef8a62","#fddbc7","#e0e0e0","#999999","#4d4d4d"],
+7: ["#b2182b","#ef8a62","#fddbc7","#ffffff","#e0e0e0","#999999","#4d4d4d"],
+8: ["#b2182b","#d6604d","#f4a582","#fddbc7","#e0e0e0","#bababa","#878787","#4d4d4d"],
+9: ["#b2182b","#d6604d","#f4a582","#fddbc7","#ffffff","#e0e0e0","#bababa","#878787","#4d4d4d"],
+10: ["#67001f","#b2182b","#d6604d","#f4a582","#fddbc7","#e0e0e0","#bababa","#878787","#4d4d4d","#1a1a1a"],
+11: ["#67001f","#b2182b","#d6604d","#f4a582","#fddbc7","#ffffff","#e0e0e0","#bababa","#878787","#4d4d4d","#1a1a1a"]
+},RdYlBu: {
+3: ["#fc8d59","#ffffbf","#91bfdb"],
+4: ["#d7191c","#fdae61","#abd9e9","#2c7bb6"],
+5: ["#d7191c","#fdae61","#ffffbf","#abd9e9","#2c7bb6"],
+6: ["#d73027","#fc8d59","#fee090","#e0f3f8","#91bfdb","#4575b4"],
+7: ["#d73027","#fc8d59","#fee090","#ffffbf","#e0f3f8","#91bfdb","#4575b4"],
+8: ["#d73027","#f46d43","#fdae61","#fee090","#e0f3f8","#abd9e9","#74add1","#4575b4"],
+9: ["#d73027","#f46d43","#fdae61","#fee090","#ffffbf","#e0f3f8","#abd9e9","#74add1","#4575b4"],
+10: ["#a50026","#d73027","#f46d43","#fdae61","#fee090","#e0f3f8","#abd9e9","#74add1","#4575b4","#313695"],
+11: ["#a50026","#d73027","#f46d43","#fdae61","#fee090","#ffffbf","#e0f3f8","#abd9e9","#74add1","#4575b4","#313695"]
+},Spectral: {
+3: ["#fc8d59","#ffffbf","#99d594"],
+4: ["#d7191c","#fdae61","#abdda4","#2b83ba"],
+5: ["#d7191c","#fdae61","#ffffbf","#abdda4","#2b83ba"],
+6: ["#d53e4f","#fc8d59","#fee08b","#e6f598","#99d594","#3288bd"],
+7: ["#d53e4f","#fc8d59","#fee08b","#ffffbf","#e6f598","#99d594","#3288bd"],
+8: ["#d53e4f","#f46d43","#fdae61","#fee08b","#e6f598","#abdda4","#66c2a5","#3288bd"],
+9: ["#d53e4f","#f46d43","#fdae61","#fee08b","#ffffbf","#e6f598","#abdda4","#66c2a5","#3288bd"],
+10: ["#9e0142","#d53e4f","#f46d43","#fdae61","#fee08b","#e6f598","#abdda4","#66c2a5","#3288bd","#5e4fa2"],
+11: ["#9e0142","#d53e4f","#f46d43","#fdae61","#fee08b","#ffffbf","#e6f598","#abdda4","#66c2a5","#3288bd","#5e4fa2"]
+},RdYlGn: {
+3: ["#fc8d59","#ffffbf","#91cf60"],
+4: ["#d7191c","#fdae61","#a6d96a","#1a9641"],
+5: ["#d7191c","#fdae61","#ffffbf","#a6d96a","#1a9641"],
+6: ["#d73027","#fc8d59","#fee08b","#d9ef8b","#91cf60","#1a9850"],
+7: ["#d73027","#fc8d59","#fee08b","#ffffbf","#d9ef8b","#91cf60","#1a9850"],
+8: ["#d73027","#f46d43","#fdae61","#fee08b","#d9ef8b","#a6d96a","#66bd63","#1a9850"],
+9: ["#d73027","#f46d43","#fdae61","#fee08b","#ffffbf","#d9ef8b","#a6d96a","#66bd63","#1a9850"],
+10: ["#a50026","#d73027","#f46d43","#fdae61","#fee08b","#d9ef8b","#a6d96a","#66bd63","#1a9850","#006837"],
+11: ["#a50026","#d73027","#f46d43","#fdae61","#fee08b","#ffffbf","#d9ef8b","#a6d96a","#66bd63","#1a9850","#006837"]
+},Accent: {
+3: ["#7fc97f","#beaed4","#fdc086"],
+4: ["#7fc97f","#beaed4","#fdc086","#ffff99"],
+5: ["#7fc97f","#beaed4","#fdc086","#ffff99","#386cb0"],
+6: ["#7fc97f","#beaed4","#fdc086","#ffff99","#386cb0","#f0027f"],
+7: ["#7fc97f","#beaed4","#fdc086","#ffff99","#386cb0","#f0027f","#bf5b17"],
+8: ["#7fc97f","#beaed4","#fdc086","#ffff99","#386cb0","#f0027f","#bf5b17","#666666"]
+},Dark2: {
+3: ["#1b9e77","#d95f02","#7570b3"],
+4: ["#1b9e77","#d95f02","#7570b3","#e7298a"],
+5: ["#1b9e77","#d95f02","#7570b3","#e7298a","#66a61e"],
+6: ["#1b9e77","#d95f02","#7570b3","#e7298a","#66a61e","#e6ab02"],
+7: ["#1b9e77","#d95f02","#7570b3","#e7298a","#66a61e","#e6ab02","#a6761d"],
+8: ["#1b9e77","#d95f02","#7570b3","#e7298a","#66a61e","#e6ab02","#a6761d","#666666"]
+},Paired: {
+3: ["#a6cee3","#1f78b4","#b2df8a"],
+4: ["#a6cee3","#1f78b4","#b2df8a","#33a02c"],
+5: ["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99"],
+6: ["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c"],
+7: ["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f"],
+8: ["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00"],
+9: ["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6"],
+10: ["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a"],
+11: ["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a","#ffff99"],
+12: ["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a","#ffff99","#b15928"]
+},Pastel1: {
+3: ["#fbb4ae","#b3cde3","#ccebc5"],
+4: ["#fbb4ae","#b3cde3","#ccebc5","#decbe4"],
+5: ["#fbb4ae","#b3cde3","#ccebc5","#decbe4","#fed9a6"],
+6: ["#fbb4ae","#b3cde3","#ccebc5","#decbe4","#fed9a6","#ffffcc"],
+7: ["#fbb4ae","#b3cde3","#ccebc5","#decbe4","#fed9a6","#ffffcc","#e5d8bd"],
+8: ["#fbb4ae","#b3cde3","#ccebc5","#decbe4","#fed9a6","#ffffcc","#e5d8bd","#fddaec"],
+9: ["#fbb4ae","#b3cde3","#ccebc5","#decbe4","#fed9a6","#ffffcc","#e5d8bd","#fddaec","#f2f2f2"]
+},Pastel2: {
+3: ["#b3e2cd","#fdcdac","#cbd5e8"],
+4: ["#b3e2cd","#fdcdac","#cbd5e8","#f4cae4"],
+5: ["#b3e2cd","#fdcdac","#cbd5e8","#f4cae4","#e6f5c9"],
+6: ["#b3e2cd","#fdcdac","#cbd5e8","#f4cae4","#e6f5c9","#fff2ae"],
+7: ["#b3e2cd","#fdcdac","#cbd5e8","#f4cae4","#e6f5c9","#fff2ae","#f1e2cc"],
+8: ["#b3e2cd","#fdcdac","#cbd5e8","#f4cae4","#e6f5c9","#fff2ae","#f1e2cc","#cccccc"]
+},Set1: {
+3: ["#e41a1c","#377eb8","#4daf4a"],
+4: ["#e41a1c","#377eb8","#4daf4a","#984ea3"],
+5: ["#e41a1c","#377eb8","#4daf4a","#984ea3","#ff7f00"],
+6: ["#e41a1c","#377eb8","#4daf4a","#984ea3","#ff7f00","#ffff33"],
+7: ["#e41a1c","#377eb8","#4daf4a","#984ea3","#ff7f00","#ffff33","#a65628"],
+8: ["#e41a1c","#377eb8","#4daf4a","#984ea3","#ff7f00","#ffff33","#a65628","#f781bf"],
+9: ["#e41a1c","#377eb8","#4daf4a","#984ea3","#ff7f00","#ffff33","#a65628","#f781bf","#999999"]
+},Set2: {
+3: ["#66c2a5","#fc8d62","#8da0cb"],
+4: ["#66c2a5","#fc8d62","#8da0cb","#e78ac3"],
+5: ["#66c2a5","#fc8d62","#8da0cb","#e78ac3","#a6d854"],
+6: ["#66c2a5","#fc8d62","#8da0cb","#e78ac3","#a6d854","#ffd92f"],
+7: ["#66c2a5","#fc8d62","#8da0cb","#e78ac3","#a6d854","#ffd92f","#e5c494"],
+8: ["#66c2a5","#fc8d62","#8da0cb","#e78ac3","#a6d854","#ffd92f","#e5c494","#b3b3b3"]
+},Set3: {
+3: ["#8dd3c7","#ffffb3","#bebada"],
+4: ["#8dd3c7","#ffffb3","#bebada","#fb8072"],
+5: ["#8dd3c7","#ffffb3","#bebada","#fb8072","#80b1d3"],
+6: ["#8dd3c7","#ffffb3","#bebada","#fb8072","#80b1d3","#fdb462"],
+7: ["#8dd3c7","#ffffb3","#bebada","#fb8072","#80b1d3","#fdb462","#b3de69"],
+8: ["#8dd3c7","#ffffb3","#bebada","#fb8072","#80b1d3","#fdb462","#b3de69","#fccde5"],
+9: ["#8dd3c7","#ffffb3","#bebada","#fb8072","#80b1d3","#fdb462","#b3de69","#fccde5","#d9d9d9"],
+10: ["#8dd3c7","#ffffb3","#bebada","#fb8072","#80b1d3","#fdb462","#b3de69","#fccde5","#d9d9d9","#bc80bd"],
+11: ["#8dd3c7","#ffffb3","#bebada","#fb8072","#80b1d3","#fdb462","#b3de69","#fccde5","#d9d9d9","#bc80bd","#ccebc5"],
+12: ["#8dd3c7","#ffffb3","#bebada","#fb8072","#80b1d3","#fdb462","#b3de69","#fccde5","#d9d9d9","#bc80bd","#ccebc5","#ffed6f"]
+}};
+
+if (typeof define === "function" && define.amd) {
+    define(colorbrewer);
+} else if (typeof module === "object" && module.exports) {
+    module.exports = colorbrewer;
+} else {
+    this.colorbrewer = colorbrewer;
+}
+
+}();
+
+},{}],2:[function(require,module,exports){
+module.exports = require('./colorbrewer.js');
+
+},{"./colorbrewer.js":1}],3:[function(require,module,exports){
 // https://d3js.org Version 4.9.1. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -16866,7 +17186,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],2:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 //! moment.js
 //! version : 2.18.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -21331,217 +21651,974 @@ return hooks;
 
 })));
 
-},{}],3:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
+'use strict';
+
+var _require = require('./dataHelpers'),
+    subsetData = _require.subsetData;
+
+var _require2 = require('./chartHelpers'),
+    setUpSVG = _require2.setUpSVG,
+    drawAxes = _require2.drawAxes,
+    makeLine = _require2.makeLine,
+    makeArea = _require2.makeArea,
+    writeDate = _require2.writeDate;
+
+var Tagger = require('./Tagger/Tagger');
+var TagViz = require('./TagViz');
+
+/* Takes a bunch of self explanatory variables, but mostly the data as a json file and the date 
+ * @param {Array} data - This is an array of objects with keys "hr", "steps", and "time".
+ * @param {String} date - String of the date in MM-DD-YYYY format. 
+ * @param {Object} scales - Object housing three d3 scales: x, y, and toSeconds
+ * @param {Object} margins - Follows the standard d3 margin conventions. Gives padding on each side of chart. 
+ * @param {Number} [height = 200] - height in pixels of the days plot
+ * @param {Number} [width = 1000] - Width in pixels of days plot
+ * @param {Number} [lineThickness = 1] - Plot line thickness. 
+ * @param {String} [hrColor = '#8da0cb'] - Hex code for heartrate line color
+ * @param {String} [stepsColor = '#66c2a5'] - Hex code for steps bar color.
+ * @param {String} [fontFamily = 'avenir'] - Valid css name for a font for axes. 
+*/
+var SingleDay = function SingleDay(config) {
+  var data = config.data,
+      date = config.date,
+      scales = config.scales,
+      margins = config.margins,
+      sel = config.sel,
+      onTag = config.onTag,
+      onTagDelete = config.onTagDelete,
+      height = config.height,
+      width = config.width,
+      _config$lineThickness = config.lineThickness,
+      lineThickness = _config$lineThickness === undefined ? 1 : _config$lineThickness,
+      _config$hrColor = config.hrColor,
+      hrColor = _config$hrColor === undefined ? '#8da0cb' : _config$hrColor,
+      _config$stepsColor = config.stepsColor,
+      stepsColor = _config$stepsColor === undefined ? '#66c2a5' : _config$stepsColor,
+      _config$fontFamily = config.fontFamily,
+      fontFamily = _config$fontFamily === undefined ? 'avenir' : _config$fontFamily;
+
+  var hrData = subsetData({ data: data, type: 'heart rate' });
+  var stepsData = subsetData({ data: data, type: 'steps' });
+  var vizWidth = width - margins.left - margins.right;
+  var vizHeight = height - margins.top - margins.bottom;
+
+  var _setUpSVG = setUpSVG({ sel: sel, height: height, width: width, margins: margins }),
+      svg = _setUpSVG.svg,
+      resizeSvg = _setUpSVG.resizeSvg;
+
+  var hrG = svg.append('g').attr('class', 'hr_plot');
+  var stepsG = svg.append('g').attr('class', 'steps_plot');
+  var axes = drawAxes({ svg: svg, scales: scales, height: height, margins: margins, fontFamily: fontFamily });
+  var dateLabel = writeDate({ date: date, margins: margins, width: width, height: height, svg: svg, fontFamily: fontFamily });
+
+  var daysTags = [];
+
+  var drawHeartRate = function drawHeartRate(line) {
+    // grab the correct g element
+    var hrLine = hrG.selectAll('path').data([hrData]);
+
+    // Update existing line
+    hrLine.attr('d', line);
+
+    // ENTER new line
+    hrLine.enter().append('path').attr('d', line).style('stroke', hrColor).style('stroke-width', lineThickness).style('fill', 'none');
+  };
+
+  var drawSteps = function drawSteps(area) {
+    var stepLine = stepsG.selectAll('path').data([stepsData]);
+
+    // Update existing line
+    stepLine.attr('d', area);
+
+    // ENTER new line
+    stepLine.enter().append('path').attr('d', area).style('fill', stepsColor).style('fill-opacity', 0.5);
+  };
+
+  // set up a tagging system for this day
+  var tagger = Tagger({
+    svg: svg,
+    sel: sel,
+    date: date,
+    width: vizWidth,
+    height: vizHeight,
+    scales: scales,
+    onTag: onTag,
+    fontFamily: fontFamily
+  });
+
+  // Now the tag visualization
+  var tagViz = TagViz({
+    svg: svg,
+    scales: scales,
+    height: vizHeight,
+    onTagDelete: onTagDelete
+  });
+
+  /** Gets new tags and visualizes them */
+  var updateTags = function updateTags(_ref) {
+    var tags = _ref.tags,
+        lastTag = _ref.lastTag;
+
+    // filter tags to this day
+    daysTags = tags.filter(function (tag) {
+      return tag.date === date;
+    });
+    tagViz.draw(daysTags);
+    tagger.changePlaceHolder(lastTag);
+  };
+
+  var resize = function resize(_ref2) {
+    var width = _ref2.width,
+        height = _ref2.height;
+
+    // update svg
+    resizeSvg({ width: width, height: height });
+    // update scales
+    scales.resizeScales({ width: width, height: height });
+    // update axes
+    axes.update({ scales: scales, height: height });
+    // update date
+    dateLabel.update({ width: width, height: height });
+    // update lines
+    drawHeartRate(makeLine(scales));
+    drawSteps(makeArea(scales));
+    // update tags
+    tagViz.draw(daysTags);
+  };
+
+  // Kick off viz.
+  resize({ width: width, height: height });
+
+  return {
+    resize: resize,
+    updateTags: updateTags
+  };
+};
+
+module.exports = SingleDay;
+
+},{"./TagViz":7,"./Tagger/Tagger":10,"./chartHelpers":11,"./dataHelpers":12}],6:[function(require,module,exports){
+'use strict';
+
+var _require = require('./chartHelpers'),
+    trans = _require.trans;
+
+/** Creates a legend that updates with the currently present tags.*/
+
+var TagLegend = function TagLegend(config) {
+  var el = config.el,
+      tagColors = config.tagColors,
+      tags = config.tags,
+      onHighlight = config.onHighlight,
+      fontFamily = config.fontFamily;
+  // Header
+
+  el.style('font-family', fontFamily).append('div').attr('class', 'legend_header').style('padding', '10px').append('h2').text('Current Tags:');
+
+  // set up flex box environment for parent div
+  var legendHolder = el.append('div').attr('class', 'legend_holder').style('display', 'flex').style('flex-wrap', 'wrap');
+
+  var update = function update(tagColors, tags) {
+    // Sort through tags and find which ones are shown and their colors. 
+    var currentTags = Object.keys(tagColors).map(function (tag) {
+      return {
+        tag: tag,
+        color: tagColors[tag],
+        numTimesSeen: tags.filter(function (t) {
+          return t.tag === tag;
+        }).length
+      };
+    }).filter(function (tag) {
+      return tag.numTimesSeen > 0;
+    });
+
+    // JOIN
+    var tagDivs = legendHolder.selectAll('.tag_color').data(currentTags, function (d) {
+      return d.tag;
+    });
+
+    // EXIT
+    tagDivs.exit().transition(trans('leaving')).style('opacity', 0).remove();
+
+    // UPDATE
+    tagDivs.select('.times_seen').text(function (d) {
+      return '# times: ' + d.numTimesSeen;
+    });
+
+    // ENTER
+    var enterDiv = tagDivs.enter().append('div').attr('class', 'tag_color').style('width', '100px').style('margin', '5px').style('padding', '3px').style('border-radius', '10px').style('text-align', 'center');
+
+    enterDiv.append('span').style('text-shadow', 'black 0px 0px 10px').style('color', 'white').style('font-weight', 'bold').text(function (d) {
+      return d.tag;
+    });
+
+    enterDiv.append('br');
+
+    enterDiv.append('span').attr('class', 'times_seen').style('text-shadow', 'black 0px 0px 10px').style('color', 'white').text(function (d) {
+      return '# times: ' + d.numTimesSeen;
+    });
+
+    enterDiv.transition(trans('entering')).style('background-color', function (d) {
+      return d.color;
+    });
+  };
+
+  return {
+    update: update
+  };
+};
+
+module.exports = TagLegend;
+
+},{"./chartHelpers":11}],7:[function(require,module,exports){
+'use strict';
+
+var _require = require('./timeHelpers'),
+    secondsToTime = _require.secondsToTime;
+
+var _require2 = require('./chartHelpers'),
+    trans = _require2.trans;
+
+/* Is supplied with a svg object and some config options and then exposes 
+ *  a way of plotting tagged events when supplied with an array of tags. 
+ */
+
+var TagViz = function TagViz(config) {
+  var svg = config.svg,
+      scales = config.scales,
+      height = config.height,
+      _config$barThickness = config.barThickness,
+      barThickness = _config$barThickness === undefined ? 25 : _config$barThickness,
+      _config$transitionSpe = config.transitionSpeed,
+      transitionSpeed = _config$transitionSpe === undefined ? 400 : _config$transitionSpe,
+      _config$onTagDelete = config.onTagDelete,
+      onTagDelete = _config$onTagDelete === undefined ? function (tag) {
+    return console.log(tag);
+  } : _config$onTagDelete;
+
+  var tagG = svg.append('g').attr('class', 'tags_container');
+
+  // this is an ugly concatnation of functions I use a bit.
+  var secToPlot = function secToPlot(secs) {
+    return scales.x(secondsToTime(secs));
+  };
+
+  var expandBar = function expandBar(tag) {
+    return tag.select('rect').transition(trans('expanding')).style('fill-opacity', 0.85).attr('height', 3 * barThickness).attr('y', height - 2 * barThickness);
+  };
+
+  var shrinkBar = function shrinkBar(tag) {
+    return tag.select('rect').transition(trans('shrinking')).style('fill-opacity', 0.5).attr('height', barThickness).attr('y', height);
+  };
+
+  /** Behavior when individual tag is moused over */
+  function onMouseover(selectedTag) {
+    var buttonRadius = barThickness * 0.5;
+
+    // append delete button
+    var deleteButton = d3.select(this).append('g').attr('class', 'delete_button').attr('transform', function (d) {
+      return 'translate(' + buttonRadius + ',' + (height + buttonRadius) + ')';
+    }).attr('opacity', 1e-6).on('click', onTagDelete);
+
+    var deleteCircle = deleteButton.append('circle').attr('r', buttonRadius).attr('fill', 'grey');
+
+    var deleteX = deleteButton.append('text').attr('text-anchor', 'middle').style('stroke', '#f0f0f0').attr('dominant-baseline', 'central').text('X');
+
+    deleteButton.transition(trans('expanding')).attr('opacity', 1);
+  };
+
+  /** Behavior when individual tag is moused off */
+  function onMouseout(selectedTag) {
+    d3.select(this).select('.delete_button').transition(trans('expanding')).attr('opacity', 1e-6).remove();
+  }
+
+  var draw = function draw(tags) {
+    // JOIN data to our tags holder
+    var tagBars = tagG.selectAll('.tag').data(tags, function (d) {
+      return d.start;
+    });
+
+    // EXIT old tags not present in new data.
+    tagBars.exit().remove();
+
+    // UPDATE elements that were still there, such as on resize. 
+    tagBars.attr('transform', function (d) {
+      return 'translate(' + secToPlot(d.start) + ',0)';
+    }).select('rect').style('fill', function (d) {
+      return d.color;
+    }).attr('width', function (d) {
+      return secToPlot(d.end) - secToPlot(d.start);
+    });
+
+    // ENTER new tags
+    tagBars.enter().append('g').attr('class', 'tag').attr('transform', function (d) {
+      return 'translate(' + secToPlot(d.start) + ',0)';
+    }).on('mouseenter', onMouseover).on('mouseleave', onMouseout).append('rect').attr('class', 'tag_bar').style('fill-opacity', '0.5').attr('y', height).attr('rx', barThickness * 0.5).attr('ry', barThickness * 0.5).attr('height', barThickness).attr('width', 1e-6).style('fill', function (d) {
+      return d.color;
+    }).transition(trans).attr('width', function (d) {
+      return secToPlot(d.end) - secToPlot(d.start);
+    });
+  };
+
+  return { draw: draw };
+};
+
+module.exports = TagViz;
+
+},{"./chartHelpers":11,"./timeHelpers":14}],8:[function(require,module,exports){
 'use strict';
 
 var d3 = require('d3');
-var moment = require('moment');
 
-var secondsToTime = function secondsToTime(secs) {
-    return moment().startOf('day').seconds(secs);
+/** Attaches to a single day and initializes a 2d brush on it.
+ * Containers helpers to allow for ease of enabling and disabling the brushes
+ */
+var TagBrush = function TagBrush(config) {
+  var svg = config.svg,
+      width = config.width,
+      height = config.height,
+      scales = config.scales,
+      onBrush = config.onBrush,
+      onClickOff = config.onClickOff;
+
+  // Have we disabled this brush due to another brush being open?
+
+  var _config$allowBrush = config.allowBrush,
+      allowBrush = _config$allowBrush === undefined ? true : _config$allowBrush;
+
+  /** What happens on brushing */
+
+  function brushBehavior() {
+    // if the brush selection is a region
+    try {
+      var s = d3.event.selection;
+      var timeRange = s.map(function (t) {
+        return scales.toSeconds(t);
+      });
+      // Behavior when brush extent is valid.
+      onBrush(timeRange);
+    } catch (err) {
+      // When the user has just clicked elsewhere.
+      onClickOff();
+    }
+  }
+  // set up brushing function.
+  var brush = d3.brushX().extent([[0, 0], [width, height]]).on('brush end', brushBehavior);
+
+  // append a container for the brush and call the brush function on it.
+  svg.append('g').attr('class', 'brush').call(brush);
+
+  // Switch on brush
+  var turnOn = function turnOn() {
+    return allowBrush = true;
+  };
+
+  // disable brush
+  var turnOff = function turnOff() {
+    return allowBrush = false;
+  };
+
+  return {
+    turnOn: turnOn,
+    turnOff: turnOff
+  };
 };
 
-var subset_data = function subset_data(_ref) {
-    var data = _ref.data,
-        type = _ref.type,
-        _ref$x_val = _ref.x_val,
-        x_val = _ref$x_val === undefined ? "time" : _ref$x_val,
-        _ref$y_val = _ref.y_val,
-        y_val = _ref$y_val === undefined ? "value" : _ref$y_val;
-    return data.filter(function (d) {
-        return d.type == type;
-    }).map(function (d) {
-        return {
-            x: secondsToTime(+d[x_val]),
-            y: +d[y_val]
-        };
+module.exports = TagBrush;
+
+},{"d3":3}],9:[function(require,module,exports){
+'use strict';
+
+var _slicedToArray = function () {
+  function sliceIterator(arr, i) {
+    var _arr = [];var _n = true;var _d = false;var _e = undefined;try {
+      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;_e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"]) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }return _arr;
+  }return function (arr, i) {
+    if (Array.isArray(arr)) {
+      return arr;
+    } else if (Symbol.iterator in Object(arr)) {
+      return sliceIterator(arr, i);
+    } else {
+      throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    }
+  };
+}();
+
+var d3 = require('d3');
+
+var _require = require('../timeHelpers'),
+    getTimeOfDay = _require.getTimeOfDay;
+
+/* Main Func */
+
+var TagInput = function TagInput(config) {
+  // unpack the config.
+  var sel = config.sel,
+      scales = config.scales,
+      date = config.date,
+      onTag = config.onTag,
+      fontFamily = config.fontFamily;
+
+  // Variable to store the time ranges for selections. In seconds into day.
+
+  var timeRange = [];
+
+  var edgeRoundness = '8px';
+
+  // Main container div for all selection.
+  var tagBody = sel.append('div').style('position', 'absolute').style('text-align', 'center').style('padding', '8px 8px').style('border-radius', edgeRoundness).style('font-family', fontFamily).style('background-color', '#1f78b4').style('display', 'none');
+
+  var tagText = tagBody.style('cursor', 'default').style('text-shadow', 'black 0px 0px 20px').style('color', 'white').append('span');
+
+  var tagForm = tagBody.append('form');
+
+  // Wrap tagging in a form element to allow for enter to be used to submit a tag.
+  var tagInput = tagForm.append('input').attr('type', 'text').attr('name', 'activity_tag').style('margin-top', '4px').style('margin-right', '4px').style('background-image', 'linear-gradient(#b5b5b5, #858385)').style('border-radius', edgeRoundness).style('border', '1px solid #464646').style('padding', '1px 4px').style('text-shadow', 'black 0px 0px 20px');
+
+  // add submit button
+  tagForm.append('input').attr('type', 'submit').attr('value', 'tag').style('margin-left', '3px').style('border', '0').style('background-image', 'linear-gradient(#b5b5b5, #858385)').style('border-radius', edgeRoundness);
+
+  // deal with form submit behavior
+  tagForm.on('submit', function () {
+    d3.event.preventDefault();
+    var tag = tagInput._groups[0][0].value;
+
+    // check to make sure the user put in some form of a tag.
+    var tagEmpty = tag === '';
+    if (tagEmpty) {
+      alert('Please enter a tag label.');
+      return;
+    }
+    // pass info to whatever tagging callback we have.
+    onTag({
+      tag: tag,
+      date: date,
+      start: timeRange[0],
+      end: timeRange[1]
     });
+
+    hide();
+  });
+
+  // hides the tagger.
+  var hide = function hide() {
+    // hide the tagging container
+    tagBody.transition().duration(200).style('opacity', 0).on('end', function () {
+      d3.select(this).style('display', 'none');
+    });
+
+    // also hide the brush rectangle d3 auto appends.
+    sel.select('.selection').transition().duration(200).style('fill-opacity', 0).on('end', function () {
+      d3.select(this).style('display', 'none').style('fill-opacity', 0.3);
+    });
+  };
+
+  /* move tagger around. Transition property allows it to be animated or not.*/
+  var move = function move(_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+        start = _ref2[0],
+        end = _ref2[1];
+
+    var transition = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+    // update the taggers timerange so tags have proper times
+    timeRange = [start, end];
+
+    // find the x position in pixels from the seconds provided to move.
+    var xPos = scales.toSeconds.invert(start);
+
+    // move the tag box to correct place
+    tagBody.transition().duration(transition ? 200 : 0).style('opacity', 0.9).style('display', 'inline').style('left', xPos + 40 + 'px');
+
+    // update text of the time.
+    tagText.text('Between ' + getTimeOfDay(start) + ' and ' + getTimeOfDay(end) + ':');
+  };
+
+  /* Programatically change the input text. Helpful for when new tag is on a different day*/
+  var changePlaceholder = function changePlaceholder(tag) {
+    return tagInput._groups[0][0].value = tag;
+  };
+
+  return {
+    hide: hide,
+    move: move,
+    changePlaceholder: changePlaceholder
+  };
 };
 
-var appendSVG = function appendSVG(_ref2) {
-    var sel = _ref2.sel,
-        height = _ref2.height,
-        width = _ref2.width,
-        margin = _ref2.margin;
-    return sel.append("svg").attr("width", width).attr("height", height).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+module.exports = TagInput;
+
+},{"../timeHelpers":14,"d3":3}],10:[function(require,module,exports){
+'use strict';
+
+var TagBrush = require('./TagBrush');
+var TagInput = require('./TagInput');
+
+/* Sets up a given days tag interface. Wraps an input and a d3 brush behavior and spits out new tags. */
+var Tagger = function Tagger(config) {
+  var svg = config.svg,
+      sel = config.sel,
+      height = config.height,
+      width = config.width,
+      scales = config.scales,
+      date = config.date,
+      onTag = config.onTag,
+      fontFamily = config.fontFamily;
+
+  var allowBrush = true;
+
+  // set up input
+  var tagInput = TagInput({
+    sel: sel,
+    date: date,
+    scales: scales,
+    onTag: onTag,
+    fontFamily: fontFamily
+  });
+
+  TagBrush({
+    svg: svg,
+    width: width,
+    height: height,
+    allowBrush: allowBrush,
+    scales: scales,
+    onBrush: function onBrush(range) {
+      if (allowBrush) {
+        tagInput.move(range);
+      }
+    },
+    onClickOff: function onClickOff() {
+      return tagInput.hide();
+    }
+  });
+
+  return {
+    changePlaceHolder: tagInput.changePlaceholder
+  };
 };
 
-var makeScales = function makeScales(_ref3) {
-    var raw_data = _ref3.raw_data,
-        data = _ref3.data,
-        y_max = _ref3.y_max,
-        height = _ref3.height,
-        width = _ref3.width;
+module.exports = Tagger;
 
-    var x = d3.scaleTime().domain([secondsToTime(0), secondsToTime(86400)]).range([0, width]);
+},{"./TagBrush":8,"./TagInput":9}],11:[function(require,module,exports){
+'use strict';
 
-    var y = d3.scaleLinear().domain([0, y_max]).range([height, 0]);
+var d3 = require('d3');
 
-    //pixels back into seconds. 
-    var toSeconds = d3.scaleLinear().domain([0, width]).range(d3.extent(raw_data, function (d) {
-        return +d.time;
-    }));
+var _require = require('./timeHelpers'),
+    secondsToTime = _require.secondsToTime,
+    timeFormat = _require.timeFormat,
+    toMonthDay = _require.toMonthDay;
 
-    return { x: x, y: y, toSeconds: toSeconds };
+// Appends an svg to a div and provides a function for resizing it.
+
+
+var setUpSVG = function setUpSVG(config) {
+  var sel = config.sel,
+      width = config.width,
+      height = config.height,
+      margins = config.margins;
+
+  // draw svg to screen
+
+  var svg = sel.append('svg').style('user-select', 'none').style('cursor', 'default');
+
+  var svgG = svg.append('g').attr('class', 'viz_container');
+
+  // function to change size of svg
+  var resizeSvg = function resizeSvg(_ref) {
+    var width = _ref.width,
+        height = _ref.height;
+
+    svg.attr('width', width).attr('height', height);
+
+    svgG.attr('transform', 'translate(' + margins.left + ',' + margins.top + ')');
+  };
+
+  // initialize svg with passed sizes.
+  resizeSvg({ width: width, height: height });
+
+  // returns svg selection and also the resize function.
+  return {
+    svg: svgG,
+    resizeSvg: resizeSvg
+  };
+};
+
+// returns a scale for x y and to convert to seconds from screen position
+// as well as returning a function for recomputing the size dependent components.
+var makeScales = function makeScales(_ref2) {
+  var yMax = _ref2.yMax,
+      height = _ref2.height,
+      width = _ref2.width,
+      margins = _ref2.margins;
+
+  // Set up static parts of the scales.
+  var x = d3.scaleTime().domain([secondsToTime(0), secondsToTime(86400)]);
+  var y = d3.scaleLinear().domain([0, yMax]);
+  var toSeconds = d3.scaleLinear().range([0, 86400]);
+
+  var resizeScales = function resizeScales(_ref3) {
+    var width = _ref3.width,
+        height = _ref3.height;
+
+    var chartWidth = width - margins.left - margins.right;
+    var chartHeight = height - margins.top - margins.bottom;
+
+    // Based on the supplied sizes,
+    // assign the range to x and y and domain to seconds
+    x.range([0, chartWidth]);
+    y.range([chartHeight, 0]);
+    toSeconds.domain([0, chartWidth]);
+  };
+
+  // Size scales for initial use.
+  resizeScales({ width: width, height: height });
+
+  return {
+    x: x,
+    y: y,
+    toSeconds: toSeconds,
+    resizeScales: resizeScales
+  };
 };
 
 var drawAxes = function drawAxes(_ref4) {
-    var svg = _ref4.svg,
-        scales = _ref4.scales,
-        height = _ref4.height,
-        font = _ref4.font;
+  var svg = _ref4.svg,
+      scales = _ref4.scales,
+      height = _ref4.height,
+      margins = _ref4.margins,
+      fontFamily = _ref4.fontFamily;
 
-    // Add the X Axis
-    svg.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(scales.x).tickFormat(d3.timeFormat("%I %p")));
+  // Add the axes holders
+  var xAxis = svg.append('g').attr('class', 'x_axis');
+  var yAxis = svg.append('g').attr('class', 'y_axis');
 
-    // Add the Y Axis
-    svg.append("g").call(d3.axisLeft(scales.y).ticks(5));
+  var update = function update(_ref5) {
+    var scales = _ref5.scales,
+        height = _ref5.height;
 
-    //givem a better font
-    svg.selectAll(".tick text").attr("font-family", font);
+    xAxis.attr('transform', 'translate(0,0)').attr('transform', 'translate(0,' + (height - margins.top - margins.bottom) + ')').call(d3.axisBottom(scales.x).tickFormat(timeFormat));
+
+    yAxis.call(d3.axisLeft(scales.y).ticks(5));
+  };
+
+  // run update axis once to initialize:
+  update({ scales: scales, height: height });
+
+  // givem a better font
+  svg.selectAll('.tick text').attr('font-family', fontFamily);
+
+  return {
+    update: update
+  };
 };
 
-var makeLine = function makeLine(_ref5) {
-    var scales = _ref5.scales;
-    return d3.area().x(function (d) {
-        return scales.x(d.x);
-    }).y(function (d) {
-        return scales.y(d.y);
-    });
+var makeLine = function makeLine(scales) {
+  return d3.area().x(function (d) {
+    return scales.x(d.x);
+  }).y(function (d) {
+    return scales.y(d.y);
+  });
 };
 
-var makeArea = function makeArea(_ref6) {
-    var scales = _ref6.scales;
-    return d3.area().curve(d3.curveStepAfter).x(function (d) {
-        return scales.x(d.x);
-    }).y(function (d) {
-        return scales.y(0);
-    }).y1(function (d) {
-        return scales.y(d.y);
-    });
+var makeArea = function makeArea(scales) {
+  return d3.area().curve(d3.curveStepAfter).x(function (d) {
+    return scales.x(d.x);
+  }).y(function (d) {
+    return scales.y(0);
+  }).y1(function (d) {
+    return scales.y(d.y);
+  });
 };
 
-var makeBrush = function makeBrush(_ref7) {
+var writeDate = function writeDate(_ref6) {
+  var date = _ref6.date,
+      margins = _ref6.margins,
+      width = _ref6.width,
+      height = _ref6.height,
+      svg = _ref6.svg,
+      fontFamily = _ref6.fontFamily;
+
+  var dateLabel = svg.append('g').attr('class', 'current_date').append('text').attr('text-anchor', 'middle').attr('font-family', fontFamily).attr('font-size', 20).text(toMonthDay(date));
+
+  // moves the date upon resize.
+  var update = function update(_ref7) {
     var width = _ref7.width,
-        height = _ref7.height,
-        scales = _ref7.scales,
-        _ref7$onBrush = _ref7.onBrush,
-        onBrush = _ref7$onBrush === undefined ? function (extents) {
-        return console.log(extents);
-    } : _ref7$onBrush;
+        height = _ref7.height;
+    return dateLabel.attr('transform', 'translate(' + (width - margins.right * 1.2) + ',' + (height - margins.top) / 2 + ') rotate(90)');
+  };
 
-    //converts pixel units to seconds into day and passes the extend of our brush to our callback. 
-    function brushMove() {
-        try {
-            var s = d3.event.selection;
-            var time_range = s.map(function (t) {
-                return scales.toSeconds(t);
-            });
-            onBrush(time_range);
-        } catch (err) {
-            console.log("oops, didn't select anything");
-        }
-    }
+  // initialize into correct position.
+  update({ width: width, height: height });
 
-    return d3.brushX().extent([[0, 0], [width, height]]).on("start brush end", brushMove);
+  return { update: update };
 };
 
-var writeDate = function writeDate(_ref8) {
-    var date = _ref8.date,
-        margin = _ref8.margin,
-        width = _ref8.width,
-        height = _ref8.height,
-        svg = _ref8.svg,
-        font = _ref8.font;
-    return svg.append("g").attr("class", "current_date").attr("transform", 'translate(' + (width + margin.right / 3) + ', ' + height / 2 + ' ) rotate(90)').append("text").attr("text-anchor", "middle").attr("font-family", font).attr("font-size", 20).text(moment(date).format("MMM  DD"));
+// The default -s in the dates cant be used as ids in html.
+var dateToId = function dateToId(date) {
+  return 'date_' + date.replace(/-/g, '_');
+};
+
+var makeDiv = function makeDiv(_ref8) {
+  var sel = _ref8.sel,
+      id = _ref8.id;
+
+  sel.append('div').style('position', 'relative').attr('id', dateToId(id)).html('');
+
+  return d3.select('#' + dateToId(id));
+};
+
+// Easy d3 transition maker. 
+// giving the transition a name avoids conflicts
+var trans = function trans() {
+  var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'sliding';
+  var speed = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 500;
+  return d3.transition(name).duration(speed);
 };
 
 module.exports = {
-    subset_data: subset_data,
-    appendSVG: appendSVG,
-    makeScales: makeScales,
-    drawAxes: drawAxes,
-    makeLine: makeLine,
-    makeArea: makeArea,
-    makeBrush: makeBrush,
-    writeDate: writeDate
+  setUpSVG: setUpSVG,
+  makeScales: makeScales,
+  drawAxes: drawAxes,
+  makeLine: makeLine,
+  makeArea: makeArea,
+  writeDate: writeDate,
+  dateToId: dateToId,
+  makeDiv: makeDiv,
+  trans: trans
 };
 
-},{"d3":1,"moment":2}],4:[function(require,module,exports){
+},{"./timeHelpers":14,"d3":3}],12:[function(require,module,exports){
 'use strict';
-
-function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-        throw new TypeError("Cannot call a class as a function");
-    }
-}
 
 var d3 = require('d3');
 
-var _require = require('./helpers'),
-    subset_data = _require.subset_data,
-    appendSVG = _require.appendSVG,
-    makeScales = _require.makeScales,
-    drawAxes = _require.drawAxes,
-    makeLine = _require.makeLine,
-    makeArea = _require.makeArea,
-    makeBrush = _require.makeBrush,
-    writeDate = _require.writeDate;
+var _require = require('./timeHelpers'),
+    secondsToTime = _require.secondsToTime;
 
-var fitbit_day = function fitbit_day(_ref) {
-    var data = _ref.data,
-        date = _ref.date,
-        _ref$dom_target = _ref.dom_target,
-        dom_target = _ref$dom_target === undefined ? "viz" : _ref$dom_target,
-        _ref$height = _ref.height,
-        height = _ref$height === undefined ? 200 : _ref$height,
-        _ref$width = _ref.width,
-        width = _ref$width === undefined ? 1000 : _ref$width,
-        _ref$y_max = _ref.y_max,
-        y_max = _ref$y_max === undefined ? 200 : _ref$y_max,
-        _ref$line_thickness = _ref.line_thickness,
-        line_thickness = _ref$line_thickness === undefined ? 1 : _ref$line_thickness,
-        _ref$hr_color = _ref.hr_color,
-        hr_color = _ref$hr_color === undefined ? "#8da0cb" : _ref$hr_color,
-        _ref$steps_color = _ref.steps_color,
-        steps_color = _ref$steps_color === undefined ? "#66c2a5" : _ref$steps_color,
-        _ref$font = _ref.font,
-        font = _ref$font === undefined ? "avenir" : _ref$font,
-        _ref$margin = _ref.margin,
-        margin = _ref$margin === undefined ? { left: 40, right: 80, top: 60, bottom: 30 } : _ref$margin;
-
-    _classCallCheck(this, fitbit_day);
-
-    var hr_data = subset_data({ data: data, type: "heart rate" }),
-        steps_data = subset_data({ data: data, type: "steps" }),
-        sel = d3.select("#" + dom_target).html(''),
-        viz_width = width - margin.left - margin.right,
-        viz_height = height - margin.top - margin.bottom,
-        svg = appendSVG({ sel: sel, height: height, width: width, margin: margin }),
-        scales = makeScales({
-        raw_data: data,
-        data: hr_data,
-        y_max: y_max,
-        height: viz_height,
-        width: viz_width
-    }),
-        line = makeLine({ scales: scales }),
-        area = makeArea({ scales: scales }),
-        tag_brush = makeBrush({ height: viz_height, width: viz_width, scales: scales });
-
-    //plot the axes
-    drawAxes({ svg: svg, scales: scales, height: viz_height, font: font });
-    writeDate({ date: date, margin: margin, width: viz_width, height: viz_height, svg: svg, font: font });
-
-    console.log(scales.x.domain());
-    var heart_line = svg.append('g').append('path').attr("d", line(hr_data)).style("stroke", hr_color).style("stroke-width", line_thickness).style("fill", "none");
-
-    var steps_line = svg.append('g').append('path').attr("d", area(steps_data)).style("fill", steps_color).style("fill-opacity", 0.5);
-
-    var tagger = svg.append("g").attr("class", "brush").call(tag_brush);
+var subsetData = function subsetData(_ref) {
+  var data = _ref.data,
+      type = _ref.type,
+      _ref$xVal = _ref.xVal,
+      xVal = _ref$xVal === undefined ? 'time' : _ref$xVal,
+      _ref$yVal = _ref.yVal,
+      yVal = _ref$yVal === undefined ? 'value' : _ref$yVal;
+  return data.filter(function (d) {
+    return d.type == type;
+  }).map(function (d) {
+    return {
+      x: secondsToTime(+d[xVal]),
+      y: +d[yVal]
+    };
+  });
 };
 
-module.exports = fitbit_day;
+var groupByDate = function groupByDate(data) {
+  return data.reduce(function (grouped, current) {
+    // check if current date is already in key
+    var dateSeen = grouped.hasOwnProperty(current.date);
+    // if this is the first time seeing this date, initialize an empty array to push to.
+    if (!dateSeen) {
+      grouped[current.date] = [];
+    }
 
-},{"./helpers":3,"d3":1}]},{},[4])(4)
+    // send the whole object through to the outcome.
+    grouped[current.date].push(current);
+
+    return grouped;
+  }, {});
+};
+
+module.exports = {
+  subsetData: subsetData,
+  groupByDate: groupByDate
+};
+
+},{"./timeHelpers":14,"d3":3}],13:[function(require,module,exports){
+'use strict';
+
+var SingleDay = require('./SingleDay');
+var TagLegend = require('./TagLegend');
+
+var _require = require('./dataHelpers'),
+    groupByDate = _require.groupByDate;
+
+var _require2 = require('./chartHelpers'),
+    makeDiv = _require2.makeDiv,
+    makeScales = _require2.makeScales;
+
+var _require3 = require('colorbrewer'),
+    colors = _require3.Set1;
+
+/* Takes multiple day's worth of data and spins out a day viz for each along with
+*  some tagging logic to go with it.
+*/
+
+var VisualizeDays = function VisualizeDays(config) {
+  var data = config.data,
+      domTarget = config.domTarget,
+      _config$dayHeight = config.dayHeight,
+      dayHeight = _config$dayHeight === undefined ? 200 : _config$dayHeight,
+      _config$dayMargins = config.dayMargins,
+      dayMargins = _config$dayMargins === undefined ? { left: 40, right: 80, top: 60, bottom: 30 } : _config$dayMargins,
+      _config$yMax = config.yMax,
+      yMax = _config$yMax === undefined ? 200 : _config$yMax,
+      _config$fontFamily = config.fontFamily,
+      fontFamily = _config$fontFamily === undefined ? 'optima' : _config$fontFamily,
+      tagMessage = config.tagMessage;
+
+  var getContainerWidth = function getContainerWidth() {
+    return sel._groups[0][0].offsetWidth;
+  };
+  var groupedData = groupByDate(data);
+  var sel = d3.select(domTarget);
+  var colorScale = colors[9];
+
+  var dayPlots = void 0;
+  // stores all the users tags [{tag, date, start, end}, ...]
+  var tags = [];
+  // Object to relate a tag to a color for plotting.
+  var tagColors = {};
+
+  // generate a common set of scales for all the days.
+  var scales = makeScales({
+    yMax: yMax,
+    height: dayHeight,
+    width: getContainerWidth(),
+    margins: dayMargins
+  });
+
+  // append the tag legend
+  var tagLegend = TagLegend({
+    el: makeDiv({ sel: sel, id: 'tag_legend' }),
+    tagColors: tagColors,
+    tags: tags,
+    fontFamily: fontFamily
+  });
+
+  // Sends tags both up to the caller of the function and also down to
+  // each day's individual viz.
+  var sendTags = function sendTags() {
+    var lastTag = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+    // update the tag legend
+    tagLegend.update(tagColors, tags);
+    // send all tags to each day's visualization
+    dayPlots.forEach(function (day) {
+      return day.updateTags({ tags: tags, lastTag: lastTag });
+    });
+    // send new tag info up to shiny or wherever calling this function.
+    tagMessage(tags, tagColors);
+  };
+
+  // behavior once a tag is made.
+  var onTag = function onTag(tag) {
+    var tagName = tag.tag;
+
+    // have we seen this tag before?
+    var tagSeen = tagColors.hasOwnProperty(tagName);
+
+    // if the tag is new lets assign it a color!
+    if (!tagSeen) {
+      tagColors[tagName] = colorScale.shift();
+    }
+
+    // assign a color to the tag
+    tag.color = tagColors[tagName];
+
+    // push it to the big tags list.
+    tags.push(tag);
+
+    // Send updates down to vis and up to caller.
+    sendTags(tagName);
+  };
+
+  // when user deletes a tag.
+  var onTagDelete = function onTagDelete(tag) {
+    // remove the deleted tag from array of tags
+    tags = tags.filter(function (t) {
+      return t !== tag;
+    });
+
+    // Send updates down to vis and up to caller.
+    sendTags();
+  };
+
+  // scan over dates and initialize a new visualization for each day.
+  dayPlots = Object.keys(groupedData).map(function (date) {
+    return new SingleDay({
+      data: groupedData[date],
+      date: date,
+      scales: scales,
+      margins: dayMargins,
+      height: dayHeight,
+      width: getContainerWidth(),
+      sel: makeDiv({ sel: sel, id: date }),
+      onTag: onTag,
+      onTagDelete: onTagDelete,
+      fontFamily: fontFamily
+    });
+  });
+
+  var resize = function resize() {
+    return dayPlots.forEach(function (day) {
+      return day.resize({ width: getContainerWidth(), height: dayHeight });
+    });
+  };
+
+  window.addEventListener('resize', function () {
+    resize();
+  });
+
+  return {
+    resize: resize
+  };
+};
+
+module.exports = VisualizeDays;
+
+},{"./SingleDay":5,"./TagLegend":6,"./chartHelpers":11,"./dataHelpers":12,"colorbrewer":2}],14:[function(require,module,exports){
+'use strict';
+
+var moment = require('moment');
+
+var secondsToTime = function secondsToTime(secs) {
+  return moment().startOf('day').seconds(secs);
+};
+
+var timeFormat = d3.timeFormat('%I %p');
+
+var toMonthDay = function toMonthDay(date) {
+  return moment(date).format('MMM  DD');
+};
+
+var getTimeOfDay = function getTimeOfDay(secs) {
+  var hour = Math.floor(secs / 3600);
+  var amPm = hour < 12 ? 'AM' : 'PM';
+  var hour12 = hour <= 12 ? hour : hour - 12;
+  var mins = Math.floor((secs - hour * 3600) / 60);
+  var minPad = ('0' + mins).substr(mins.toString().length - 1);
+  return hour12 + ':' + minPad + amPm;
+};
+
+module.exports = {
+  secondsToTime: secondsToTime,
+  timeFormat: timeFormat,
+  toMonthDay: toMonthDay,
+  getTimeOfDay: getTimeOfDay
+};
+
+},{"moment":4}]},{},[13])(13)
 });
