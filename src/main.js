@@ -39,7 +39,7 @@ const VisualizeDays = (config) => {
     dayHeight = 200,
     dayMargins = {left: 40, right: 80, top: 60, bottom: 30},
     yMax = 200,
-    fontFamily = 'times new roman',
+    fontFamily = 'optima',
   } = config;
   const getContainerWidth = () => sel._groups[0][0].offsetWidth;
   const groupedData = groupByDate(data);
