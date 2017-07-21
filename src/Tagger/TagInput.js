@@ -105,7 +105,10 @@ const TagInput = (config) => {
   };
 
   /* Programatically change the input text. Helpful for when new tag is on a different day*/
-  const changePlaceholder = (tag) => (tagInput._groups[0][0].value = tag);
+  const changePlaceholder = (tag) => {
+    const tagUndefined = typeof tag === 'undefined';
+    tagInput._groups[0][0].value = tagUndefined? '': tag;
+  };
 
   return {
     hide,

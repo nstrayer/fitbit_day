@@ -34,20 +34,16 @@ const TagViz = (config) => {
   /** Behavior when individual tag is moused over */
   function onMouseover(selectedTag) {
     const buttonRadius = barThickness * 0.5;
-    const tag = d3.select(this);
-
-    // slide bar up to show info. 
-    expandBar(tag);
 
     // append delete button
-    console.log(tag);
-    const deleteButton = tag
+    const deleteButton = d3.select(this)
       .append('g')
       .attr('class', 'delete_button')
       .attr(
         'transform',
         (d) => `translate(${buttonRadius},${height + buttonRadius})`
       )
+      .attr('opacity', 1e-6)
       .on('click', onTagDelete );
 
     const deleteCircle = deleteButton
@@ -62,28 +58,27 @@ const TagViz = (config) => {
       .attr('dominant-baseline', 'central')
       .text('X');
 
-    const deleteText = deleteButton
-      .append('text')
-      .attr('x', 1.5 * buttonRadius)
-      .attr('text-anchor', 'left')
-      .attr('dominant-baseline', 'central')
-      .text(`Delete tag`);
+    // deleteButton
+    //   .append('text')
+    //   .attr('y', 0.3*barThickness)
+    //   .attr('x', 1.5 * buttonRadius)
+    //   .attr('text-anchor', 'left')
+    //   .attr('font-weight', 'bold')
+    //   .attr('dominant-baseline', 'central')
+    //   .text(`Delete`);
 
     deleteButton
       .transition(trans('expanding'))
-       .attr(
-        'transform',
-        (d) => `translate(${buttonRadius},${height - 2*barThickness + buttonRadius})`
-      );
+      .attr('opacity', 1);
   };
 
   /** Behavior when individual tag is moused off */
   function onMouseout(selectedTag) {
-    const tagBar = d3.select(this);
-    // slide bar up back to normal size
-    shrinkBar(tagBar);
-
-    tagBar.select('.delete_button').remove();
+    d3.select(this)
+      .select('.delete_button')
+      .transition(trans('expanding'))
+      .attr('opacity', 1e-6)
+      .remove();
   }
 
   const draw = (tags) => {
