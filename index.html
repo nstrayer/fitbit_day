@@ -1,9 +1,5 @@
 <!DOCTYPE html>
 <meta charset='utf-8'>
-<script
-  src="https://code.jquery.com/jquery-3.2.1.min.js"
-  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-  crossorigin="anonymous"></script>
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js"></script>
@@ -16,8 +12,22 @@
     To preview the activity tagging interface simply drag a region on a chart. Eventually a tag input will be placed at the top, allowing the user to tag an activity over as many days as possible and then submit all at once. 
   </p>
 </div>
-<div id = "viz"> </div>
 <hr/>
+<div>
+  <h3> Tag an activity </h1>
+  
+          <div class="form-group">
+            <div class = "col-3">
+                <label for="comment">Title:</label>
+                <textarea class="form-control" rows="1" id="comment"></textarea>
+            </div>
+
+            <div class = "col-3">
+                <button type="submit" class="btn btn-primary">Tag</button>
+            </div>
+          </div>
+<div id = "viz"></div>
+<div id = "viz2"></div>
 
 <style>
   svg{
@@ -27,6 +37,7 @@
   body{
     font-family: avenir;
     margin: 15px;
+    overflow: hidden;
   }
 
   .axis{
@@ -36,15 +47,32 @@
 
 <script>
 
-  const width = window.innerWidth;
+  d3.csv("fitbit_data.csv", (err, data)=> {
 
-  d3.csv("fitbit_data.csv", (err, data) => {
+    const width =  window.innerWidth;
 
-    const fitbitPlot = new fitbit_day({
-      data,
-      domTarget: '#viz',
-      width
-    });
+    const days = [
+      {date: "2017-06-26", divid: "zero"}, 
+      {date: "2017-06-27", divid: "one"}, 
+      {date: "2017-06-28", divid: "two"}, 
+      {date: "2017-06-29", divid: "three"},
+      {date: "2017-06-30", divid: "three"}
+
+    ];
+
+    days.forEach(
+      day => {
+        const day_data = data.filter(d => d.date === day.date);
+        d3.select('body').append("div").attr("id", day.divid);
+        const day_plot = new fitbit_day({
+          data: day_data,
+          dom_target: day.divid,
+          date: day.date,
+          width
+        })
+      }
+    );
+
   })
-
+ 
 </script>
