@@ -5,7 +5,7 @@ const {getTimeOfDay} = require('../timeHelpers');
 const TagInput = (config) => {
   // unpack the config.
   const {sel, scales, date, onTag = (e) => console.log(e)} = config;
-  
+
   // Variable to store the time ranges for selections. In seconds into day.
   let timeRange = [];
 
@@ -22,7 +22,8 @@ const TagInput = (config) => {
     .style('border-radius', '8px')
     .style('top', '28px');
 
-  const tagText = tagBody.append('span');
+  const tagText = tagBody
+    .append('span');
 
   const tagForm = tagBody.append('form');
 
@@ -107,7 +108,7 @@ const TagInput = (config) => {
   /* Programatically change the input text. Helpful for when new tag is on a different day*/
   const changePlaceholder = (tag) => {
     const tagUndefined = typeof tag === 'undefined';
-    tagInput._groups[0][0].value = tagUndefined? '': tag;
+    tagInput._groups[0][0].value = tagUndefined ? '' : tag;
   };
 
   return {

@@ -4,7 +4,6 @@ const {groupByDate} = require('./dataHelpers');
 const {makeDiv, makeScales} = require('./chartHelpers');
 const {Set1: colors} = require('colorbrewer');
 
-
 // on reciept of a new tag adds it to global tags and sends new tag off to thier respective day's viz.
 const newTag = ({tag, tags, tagColors, tagLegend, colorScale, dayPlots}) => {
   const tagName = tag.tag;
@@ -38,11 +37,10 @@ const VisualizeDays = (config) => {
     data,
     domTarget,
     dayHeight = 200,
-    dayWidth = window.innerWidth,
     dayMargins = {left: 40, right: 80, top: 60, bottom: 30},
     yMax = 200,
   } = config;
-
+  const getContainerWidth = () => sel._groups[0][0].offsetWidth;
   const groupedData = groupByDate(data);
   const sel = d3.select(domTarget);
   const colorScale = colors[9];
@@ -57,7 +55,7 @@ const VisualizeDays = (config) => {
   const scales = makeScales({
     yMax,
     height: dayHeight,
-    width: dayWidth,
+    width: getContainerWidth(),
     margins: dayMargins,
   });
 
@@ -69,7 +67,7 @@ const VisualizeDays = (config) => {
   });
 
   // behavior once a tag is made.
-  const onTag = (tag) => 
+  const onTag = (tag) =>
     newTag({
       tag,
       tags,
@@ -79,7 +77,7 @@ const VisualizeDays = (config) => {
       dayPlots,
     });
 
-  // when user deletes a tag. 
+  // when user deletes a tag.
   const onTagDelete = (tag) => {
     // remove the deleted tag from array of tags
     tags = tags.filter((t) => t !== tag);
@@ -102,19 +100,21 @@ const VisualizeDays = (config) => {
         scales,
         margins: dayMargins,
         height: dayHeight,
-        width: dayWidth,
+        width: getContainerWidth(),
         sel: makeDiv({sel, id: date}),
         onTag,
         onTagDelete,
       })
   );
 
-  const resize = ({width, height = dayHeight}) => {
-    // send command to resize each day
-    dayPlots.forEach((day) => day.resize({width, height}));
-  };
+  const resize = () =>
+    dayPlots.forEach((day) =>
+      day.resize({width: getContainerWidth(), height: dayHeight})
+    );
 
-  window.addEventListener('resize', () => resize({width: window.innerWidth}) );
+  window.addEventListener('resize', () => {
+    resize();
+  });
 
   return {
     resize,
